@@ -1,0 +1,16 @@
+{
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/.godot": true,
+    "**/.import": true
+  },
+  "search.exclude": {
+    "**/.godot": true,
+    "**/.import": true,
+    "**/.git": true
+  },
+  "godotTools.editorPath.godot4": "${env:GODOT4}",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv"
+}

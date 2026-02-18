@@ -1,0 +1,59 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "gdtoolkit: lint",
+      "type": "shell",
+      "windows": {
+        "command": "pwsh",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "scripts/dev/lint.ps1"
+        ]
+      },
+      "linux": {
+        "command": "bash",
+        "args": [
+          "scripts/dev/lint.sh"
+        ]
+      },
+      "osx": {
+        "command": "bash",
+        "args": [
+          "scripts/dev/lint.sh"
+        ]
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "gdtoolkit: format",
+      "type": "shell",
+      "windows": {
+        "command": "pwsh",
+        "args": [
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "scripts/dev/format.ps1"
+        ]
+      },
+      "linux": {
+        "command": "bash",
+        "args": [
+          "scripts/dev/format.sh"
+        ]
+      },
+      "osx": {
+        "command": "bash",
+        "args": [
+          "scripts/dev/format.sh"
+        ]
+      },
+      "problemMatcher": []
+    }
+  ]
+}

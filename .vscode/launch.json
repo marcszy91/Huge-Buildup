@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Godot: Run Project",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "\"${env:GODOT4}\" --path \"${workspaceFolder}\""
+    },
+    {
+      "name": "Godot: Open Editor",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "\"${env:GODOT4}\" --editor --path \"${workspaceFolder}\""
+    }
+  ]
+}

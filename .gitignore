@@ -1,0 +1,40 @@
+# Godot 4 project files
+.import/
+.godot/
+
+# Mono / C# (if enabled later)
+.mono/
+
+# Godot export artifacts
+/export/
+/export_presets.cfg
+
+# Build outputs and archives
+build/
+dist/
+*.zip
+*.tar
+*.tar.gz
+
+# Logs and crash dumps
+*.log
+*.dmp
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code local workspace noise
+.vscode/*.log
+.vscode/*.tmp
+
+# Python tooling
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Env files
+.env
+.env.*
