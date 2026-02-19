@@ -15,9 +15,16 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Huge Buildup"
-run/main_scene="res://scenes/Match.tscn"
+run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
+
+[autoload]
+
+App="*res://scripts/autoload/app.gd"
+Net="*res://scripts/autoload/net.gd"
+Game="*res://scripts/autoload/game.gd"
+Settings="*res://scripts/autoload/settings.gd"
 
 [input]
 
