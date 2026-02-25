@@ -51,6 +51,23 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(420, 180)
 layout_mode = 2
 
+[node name="CatcherConfigLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+layout_mode = 2
+text = "Catcher Count (Host)"
+
+[node name="CatcherCountSpinBox" type="SpinBox" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 1.0
+max_value = 15.0
+step = 1.0
+value = 1.0
+
+[node name="DistributionLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Catcher config: 1 | Effective: 0 catcher / 0 runner"
+
 [node name="ReadyButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2

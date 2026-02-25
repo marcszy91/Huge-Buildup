@@ -34,7 +34,6 @@
       "windows": {
         "command": "pwsh",
         "args": [
-          "-NoProfile",
           "-ExecutionPolicy",
           "Bypass",
           "-File",
