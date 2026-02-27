@@ -1,6 +1,8 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/player_controller.gd" id="1"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/ultimate_animated_characters/glTF/Chef_Female.gltf" id="2"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/ultimate_animated_characters/glTF/Casual_Male.gltf" id="3"]
 
 [sub_resource type="CapsuleShape3D" id="1"]
 radius = 0.35
@@ -23,16 +25,28 @@ shape = SubResource("1")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("2")
 material_override = SubResource("3")
+visible = false
 
-[node name="Pivot" type="Node3D" parent="."]
+[node name="CharacterVisual" type="Node3D" parent="."]
+position = Vector3(0, -0.6, 0)
+scale = Vector3(0.85, 0.85, 0.85)
 
-[node name="Camera3D" type="Camera3D" parent="Pivot"]
-position = Vector3(0, 24, 0)
-rotation = Vector3(-1.5708, 0, 0)
-projection = 1
-size = 24.0
+[node name="ChefFemale" parent="CharacterVisual" instance=ExtResource("2")]
+
+[node name="CasualMale" parent="CharacterVisual" instance=ExtResource("3")]
+visible = false
+
+[node name="CameraYaw" type="Node3D" parent="."]
+position = Vector3(0, 1.2, 0)
+
+[node name="CameraPitch" type="Node3D" parent="CameraYaw"]
+rotation = Vector3(-0.42, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="CameraYaw/CameraPitch"]
+position = Vector3(0, 0.5, 7.2)
+fov = 72.0
+near = 0.05
 far = 200.0
-position_smoothing_enabled = true
-position_smoothing_speed = 8.0
+position_smoothing_enabled = false
 current = true
 

@@ -11,6 +11,11 @@ func _ready() -> void:
 		Game.results_changed.connect(_on_game_results_changed)
 
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_fullscreen"):
+		_toggle_fullscreen()
+
+
 func request_host(port: int, max_players: int) -> void:
 	var ok: bool = Net.host(port, max_players)
 	if ok:
@@ -67,7 +72,7 @@ func _change_scene_if_exists(scene_path: String) -> void:
 func _upsert_local_player(is_ready: bool, join_index: int) -> void:
 	var peer_id: int = Net.my_peer_id()
 	var display_name: String = Settings.display_name
-	Game.upsert_player(peer_id, display_name, is_ready, join_index)
+	Game.upsert_player(peer_id, display_name, is_ready, join_index, Settings.character_id)
 
 
 func _on_game_results_changed() -> void:
@@ -76,3 +81,10 @@ func _on_game_results_changed() -> void:
 	if Game.last_results.is_empty():
 		return
 	goto_results()
+
+
+func _toggle_fullscreen() -> void:
+	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		return
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)

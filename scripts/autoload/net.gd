@@ -128,6 +128,16 @@ func request_set_catcher_count(next_catcher_count: int) -> void:
 	_broadcast_lobby_state()
 
 
+func request_set_character(next_character_id: String) -> void:
+	var clean_character_id: String = _sanitize_character_id(next_character_id)
+	if is_host():
+		var my_id: int = my_peer_id()
+		Game.set_player_character(my_id, clean_character_id)
+		_broadcast_lobby_state()
+		return
+	rpc_id(1, "rpc_req_set_character", clean_character_id)
+
+
 func request_player_transform(pos: Vector3, yaw: float) -> void:
 	if is_host():
 		var my_id: int = my_peer_id()
@@ -190,7 +200,7 @@ func _on_peer_disconnected(peer_id: int) -> void:
 
 func _on_connected_to_server() -> void:
 	_set_state(ConnectionState.CONNECTED_CLIENT)
-	rpc_id(1, "rpc_req_join", Settings.display_name, Game.PROTOCOL_VERSION)
+	rpc_id(1, "rpc_req_join", Settings.display_name, Game.PROTOCOL_VERSION, Settings.character_id)
 
 
 func _on_connection_failed() -> void:
@@ -206,7 +216,7 @@ func _on_server_disconnected() -> void:
 
 
 @rpc("any_peer", "reliable")
-func rpc_req_join(display_name: String, client_version: int) -> void:
+func rpc_req_join(display_name: String, client_version: int, character_id: String = "chef_female") -> void:
 	if not is_host():
 		return
 
@@ -221,8 +231,9 @@ func rpc_req_join(display_name: String, client_version: int) -> void:
 	var clean_name: String = display_name.strip_edges()
 	if clean_name.is_empty():
 		clean_name = "Player"
+	var clean_character_id: String = _sanitize_character_id(character_id)
 
-	Game.upsert_player(sender_id, clean_name, false, _next_join_index)
+	Game.upsert_player(sender_id, clean_name, false, _next_join_index, clean_character_id)
 	_next_join_index += 1
 	Game.rebalance_catchers()
 	rpc_id(sender_id, "rpc_sync_join_result", true, "Joined.", sender_id)
@@ -241,6 +252,17 @@ func rpc_req_set_ready(is_ready: bool) -> void:
 	_broadcast_lobby_state()
 
 
+@rpc("any_peer", "reliable")
+func rpc_req_set_character(character_id: String) -> void:
+	if not is_host():
+		return
+	var sender_id: int = multiplayer.get_remote_sender_id()
+	if not Game.players.has(sender_id):
+		return
+	Game.set_player_character(sender_id, _sanitize_character_id(character_id))
+	_broadcast_lobby_state()
+
+
 @rpc("authority", "reliable")
 func rpc_sync_join_result(ok: bool, message: String, assigned_peer_id: int) -> void:
 	join_result.emit(ok, message)
@@ -250,7 +272,7 @@ func rpc_sync_join_result(ok: bool, message: String, assigned_peer_id: int) -> v
 		App.goto_main_menu()
 		return
 	if not Game.players.has(assigned_peer_id):
-		Game.upsert_player(assigned_peer_id, Settings.display_name, false, 9999)
+		Game.upsert_player(assigned_peer_id, Settings.display_name, false, 9999, Settings.character_id)
 
 
 @rpc("authority", "reliable")
@@ -429,3 +451,14 @@ func _host_handle_catch_attempt(sender_id: int, target_peer_id: int, my_pos: Vec
 		next_catchers,
 		freeze_until_unix_ms
 	)
+
+
+func _sanitize_character_id(raw_character_id: String) -> String:
+	var clean_id: String = raw_character_id.strip_edges().to_lower()
+	if clean_id.is_empty():
+		return "chef_female"
+	match clean_id:
+		"chef_female", "casual_male":
+			return clean_id
+		_:
+			return "chef_female"

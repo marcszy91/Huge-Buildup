@@ -73,6 +73,7 @@ func _spawn_match_players() -> void:
 				"display_name": Settings.display_name,
 				"is_ready": false,
 				"join_index": 0,
+				"character_id": Settings.character_id,
 			}
 		]
 
@@ -85,6 +86,9 @@ func _spawn_match_players() -> void:
 		player.name = "Player_%d" % peer_id
 		player.position = _spawn_position_for_index(i)
 		_players_root.add_child(player)
+		var character_id: String = str(players_snapshot[i].get("character_id", "chef_female"))
+		if player.has_method("set_character_id"):
+			player.call("set_character_id", character_id)
 
 		if player.has_method("set_local_controlled"):
 			player.call("set_local_controlled", peer_id == _local_peer_id)

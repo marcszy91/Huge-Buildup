@@ -29,33 +29,39 @@ theme_override_constants/margin_top = 18
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 18
 
-[node name="VBox" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(460, 760)
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer"]
+custom_minimum_size = Vector2(420, 920)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="Title" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 layout_mode = 2
 text = "Huge Buildup - Lobby"
 
-[node name="SessionLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="SessionLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Lobby: Disconnected"
 
-[node name="PlayersLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="PlayersLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 layout_mode = 2
 text = "Players"
 
-[node name="PlayersList" type="ItemList" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="PlayersList" type="ItemList" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(420, 180)
 layout_mode = 2
 
-[node name="CatcherConfigLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="CatcherConfigLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 layout_mode = 2
 text = "Catcher Count (Host)"
 
-[node name="CatcherCountSpinBox" type="SpinBox" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="CatcherCountSpinBox" type="SpinBox" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 min_value = 1.0
@@ -63,27 +69,81 @@ max_value = 15.0
 step = 1.0
 value = 1.0
 
-[node name="DistributionLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="DistributionLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Catcher config: 1 | Effective: 0 catcher / 0 runner"
 
-[node name="ReadyButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="CharacterSectionLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
+layout_mode = 2
+text = "Selected Character"
+
+[node name="CharacterNameLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Chef Female"
+horizontal_alignment = 1
+
+[node name="CharacterPreviewControls" type="HBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="CharacterPrevButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CharacterPreviewControls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "<"
+
+[node name="CharacterPreviewViewportContainer" type="SubViewportContainer" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CharacterPreviewControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 240)
+layout_mode = 2
+stretch = true
+
+[node name="CharacterPreviewViewport" type="SubViewport" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CharacterPreviewControls/CharacterPreviewViewportContainer"]
+handle_input_locally = false
+size = Vector2i(320, 320)
+disable_3d = false
+own_world_3d = true
+transparent_bg = false
+render_target_update_mode = 4
+
+[node name="CharacterPreviewRoot" type="Node3D" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CharacterPreviewControls/CharacterPreviewViewportContainer/CharacterPreviewViewport"]
+unique_name_in_owner = true
+
+[node name="CharacterPreviewCamera" type="Camera3D" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CharacterPreviewControls/CharacterPreviewViewportContainer/CharacterPreviewViewport"]
+unique_name_in_owner = true
+position = Vector3(0, 1.0, 2.2)
+rotation = Vector3(-0.15, 0, 0)
+current = true
+fov = 45.0
+
+[node name="CharacterPreviewLight" type="DirectionalLight3D" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CharacterPreviewControls/CharacterPreviewViewportContainer/CharacterPreviewViewport"]
+unique_name_in_owner = true
+rotation = Vector3(-0.8, 0.6, 0)
+light_energy = 2.0
+
+[node name="CharacterNextButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CharacterPreviewControls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ">"
+
+[node name="ReadyButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Set Ready"
 
-[node name="StartMatchButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="StartMatchButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Start Match (Host)"
 
-[node name="LeaveButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="LeaveButton" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Leave Lobby"
 
-[node name="NoteLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBox"]
+[node name="NoteLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Lobby ready. Match sync follows in next step."

@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/match.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/world/Arena.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/world/Arena_Quaternius.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/HudPlaceholder.tscn" id="3"]
 
 [sub_resource type="Environment" id="1"]

@@ -91,6 +91,7 @@ func apply_lobby_state(players_array: Array[Dictionary], config: Dictionary) -> 
 			"display_name": str(player.get("display_name", "Player")),
 			"is_ready": bool(player.get("is_ready", false)),
 			"join_index": int(player.get("join_index", 0)),
+			"character_id": str(player.get("character_id", "chef_female")),
 		}
 		var existing_stats: Dictionary = stats.get(peer_id, {})
 		synced_stats[peer_id] = {
@@ -126,6 +127,7 @@ func make_players_snapshot() -> Array[Dictionary]:
 					"display_name": str(player.get("display_name", "Player")),
 					"is_ready": bool(player.get("is_ready", false)),
 					"join_index": int(player.get("join_index", 0)),
+					"character_id": str(player.get("character_id", "chef_female")),
 				}
 			)
 		)
@@ -296,12 +298,19 @@ func apply_match_end(results: Array[Dictionary]) -> void:
 	results_changed.emit()
 
 
-func upsert_player(peer_id: int, display_name: String, is_ready: bool, join_index: int) -> void:
+func upsert_player(
+	peer_id: int,
+	display_name: String,
+	is_ready: bool,
+	join_index: int,
+	character_id: String = "chef_female"
+) -> void:
 	players[peer_id] = {
 		"peer_id": peer_id,
 		"display_name": display_name,
 		"is_ready": is_ready,
 		"join_index": join_index,
+		"character_id": character_id,
 	}
 	if not stats.has(peer_id):
 		stats[peer_id] = {"times_caught": 0}
@@ -324,6 +333,13 @@ func set_player_ready(peer_id: int, is_ready: bool) -> void:
 	if not players.has(peer_id):
 		return
 	players[peer_id]["is_ready"] = is_ready
+	player_list_changed.emit()
+
+
+func set_player_character(peer_id: int, character_id: String) -> void:
+	if not players.has(peer_id):
+		return
+	players[peer_id]["character_id"] = character_id
 	player_list_changed.emit()
 
 
