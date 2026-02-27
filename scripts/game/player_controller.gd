@@ -1,12 +1,11 @@
 extends CharacterBody3D
 
-const WALK_SPEED: float = 6.0
-const SPRINT_MULTIPLIER: float = 1.45
+const RUN_SPEED: float = 8.7
 const GRAVITY: float = 20.0
 const REMOTE_LERP_SPEED: float = 12.0
 const TURN_SPEED_RAD: float = 10.0
 const MOUSE_SENSITIVITY: float = 0.0024
-const CAMERA_PITCH_MIN_RAD: float = deg_to_rad(-75.0)
+const CAMERA_PITCH_MIN_RAD: float = deg_to_rad(-50.0)
 const CAMERA_PITCH_MAX_RAD: float = deg_to_rad(-10.0)
 const DEFAULT_IDLE_ANIMATION_NAME: String = "Idle"
 const DEFAULT_WALK_ANIMATION_NAME: String = "Walk"
@@ -102,7 +101,7 @@ func _process(delta: float) -> void:
 	var t: float = clampf(REMOTE_LERP_SPEED * delta, 0.0, 1.0)
 	global_position = global_position.lerp(_remote_target_position, t)
 	rotation.y = lerp_angle(rotation.y, _remote_target_yaw, t)
-	_update_character_animation(global_position.distance_to(_remote_target_position) > 0.05, false)
+	_update_character_animation(global_position.distance_to(_remote_target_position) > 0.05)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -132,7 +131,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if _is_frozen:
 		velocity = Vector3.ZERO
-		_update_character_animation(false, false)
+		_update_character_animation(false)
 		return
 
 	var input_vec: Vector2 = Input.get_vector(
@@ -156,13 +155,8 @@ func _physics_process(delta: float) -> void:
 			# Compensate root turn so mouse-look camera yaw stays visually stable in world space.
 			_camera_yaw.rotation.y += previous_root_yaw - rotation.y
 
-	var speed: float = WALK_SPEED
-	var is_sprinting: bool = Input.is_action_pressed("sprint")
-	if is_sprinting:
-		speed *= SPRINT_MULTIPLIER
-
-	velocity.x = move_dir.x * speed
-	velocity.z = move_dir.z * speed
+	velocity.x = move_dir.x * RUN_SPEED
+	velocity.z = move_dir.z * RUN_SPEED
 
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
@@ -170,7 +164,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	move_and_slide()
-	_update_character_animation(move_dir.length_squared() > 0.0, is_sprinting)
+	_update_character_animation(move_dir.length_squared() > 0.0)
 
 
 func _apply_control_mode() -> void:
@@ -219,20 +213,17 @@ func _find_animation_player_recursive(root: Node) -> AnimationPlayer:
 	return null
 
 
-func _update_character_animation(is_moving: bool, is_sprinting: bool) -> void:
+func _update_character_animation(is_moving: bool) -> void:
 	if _character_animation_player == null:
 		return
 	if not is_moving:
 		_play_character_animation(DEFAULT_IDLE_ANIMATION_NAME)
 		return
-	if is_sprinting and _character_animation_player.has_animation(DEFAULT_RUN_ANIMATION_NAME):
+	if _character_animation_player.has_animation(DEFAULT_RUN_ANIMATION_NAME):
 		_play_character_animation(DEFAULT_RUN_ANIMATION_NAME)
 		return
 	if _character_animation_player.has_animation(DEFAULT_WALK_ANIMATION_NAME):
 		_play_character_animation(DEFAULT_WALK_ANIMATION_NAME)
-		return
-	if _character_animation_player.has_animation(DEFAULT_RUN_ANIMATION_NAME):
-		_play_character_animation(DEFAULT_RUN_ANIMATION_NAME)
 
 
 func _play_character_animation(animation_name: String) -> void:
