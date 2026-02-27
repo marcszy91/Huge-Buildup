@@ -1,0 +1,644 @@
+[gd_scene load_steps=23 format=3]
+
+[ext_resource type="PackedScene" path="res://assets/quaternius/modular_dungeons/FBX/Wall_Modular.fbx" id="1"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/modular_dungeons/FBX/Arch.fbx" id="2"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/modular_dungeons/FBX/Column.fbx" id="3"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/modular_dungeons/FBX/Crate.fbx" id="4"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/modular_dungeons/FBX/Barrel.fbx" id="5"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/modular_dungeons/FBX/Torch.fbx" id="6"]
+[ext_resource type="PackedScene" path="res://assets/quaternius/modular_dungeons/FBX/Floor_Modular.fbx" id="7"]
+
+[sub_resource type="BoxShape3D" id="1"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="BoxMesh" id="2"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="BoxShape3D" id="3"]
+size = Vector3(40, 8, 1)
+
+[sub_resource type="BoxMesh" id="4"]
+size = Vector3(40, 8, 1)
+
+[sub_resource type="BoxShape3D" id="5"]
+size = Vector3(1, 8, 40)
+
+[sub_resource type="BoxMesh" id="6"]
+size = Vector3(1, 8, 40)
+
+[sub_resource type="StandardMaterial3D" id="7"]
+albedo_color = Color(0.16, 0.16, 0.18, 1)
+roughness = 0.96
+
+[sub_resource type="StandardMaterial3D" id="8"]
+albedo_color = Color(0.11, 0.11, 0.13, 1)
+roughness = 0.92
+
+[sub_resource type="BoxShape3D" id="9"]
+size = Vector3(6.2, 3.4, 1.4)
+
+[sub_resource type="BoxShape3D" id="10"]
+size = Vector3(6.0, 3.2, 1.4)
+
+[sub_resource type="BoxShape3D" id="11"]
+size = Vector3(4.0, 2.8, 1.4)
+
+[sub_resource type="BoxShape3D" id="12"]
+size = Vector3(0.9, 3.4, 1.8)
+
+[sub_resource type="BoxShape3D" id="13"]
+size = Vector3(0.9, 3.4, 1.8)
+
+[sub_resource type="BoxShape3D" id="14"]
+size = Vector3(3.2, 0.9, 1.8)
+
+[sub_resource type="BoxShape3D" id="15"]
+size = Vector3(1.8, 3.8, 1.8)
+
+[sub_resource type="BoxShape3D" id="16"]
+size = Vector3(1.4, 1.4, 1.4)
+
+[sub_resource type="BoxShape3D" id="17"]
+size = Vector3(1.1, 1.3, 1.1)
+
+[node name="Arena" type="Node3D"]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("2")
+material_override = SubResource("7")
+visible = false
+
+[node name="FloorTiles" type="Node3D" parent="Floor"]
+
+[node name="Tile00" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(-15, 0.02, -15)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile01" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(-5, 0.02, -15)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile02" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(5, 0.02, -15)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile03" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(15, 0.02, -15)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile10" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(-15, 0.02, -5)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile11" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(-5, 0.02, -5)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile12" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(5, 0.02, -5)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile13" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(15, 0.02, -5)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile20" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(-15, 0.02, 5)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile21" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(-5, 0.02, 5)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile22" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(5, 0.02, 5)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile23" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(15, 0.02, 5)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile30" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(-15, 0.02, 15)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile31" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(-5, 0.02, 15)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile32" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(5, 0.02, 15)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile33" parent="Floor/FloorTiles" instance=ExtResource("7")]
+position = Vector3(15, 0.02, 15)
+scale = Vector3(5, 1, 5)
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+position = Vector3(0, 8.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ceiling"]
+mesh = SubResource("2")
+material_override = SubResource("8")
+visible = false
+
+[node name="CeilingTiles" type="Node3D" parent="Ceiling"]
+
+[node name="Tile00" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(-15, 0, -15)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile01" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(-5, 0, -15)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile02" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(5, 0, -15)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile03" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(15, 0, -15)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile10" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(-15, 0, -5)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile11" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(-5, 0, -5)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile12" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(5, 0, -5)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile13" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(15, 0, -5)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile20" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(-15, 0, 5)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile21" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(-5, 0, 5)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile22" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(5, 0, 5)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile23" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(15, 0, 5)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile30" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(-15, 0, 15)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile31" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(-5, 0, 15)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile32" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(5, 0, 15)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="Tile33" parent="Ceiling/CeilingTiles" instance=ExtResource("7")]
+position = Vector3(15, 0, 15)
+rotation = Vector3(3.14159, 0, 0)
+scale = Vector3(5, 1, 5)
+
+[node name="WallNorth" type="StaticBody3D" parent="."]
+position = Vector3(0, 4, -19.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallNorth"]
+shape = SubResource("3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallNorth"]
+mesh = SubResource("4")
+material_override = SubResource("8")
+visible = false
+
+[node name="WallTiles" type="Node3D" parent="WallNorth"]
+
+[node name="Lower0" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-16.5, -2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower1" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-9.9, -2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower2" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-3.3, -2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower3" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(3.3, -2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower4" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(9.9, -2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower5" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(16.5, -2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper0" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-16.5, 2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper1" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-9.9, 2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper2" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-3.3, 2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper3" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(3.3, 2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper4" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(9.9, 2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper5" parent="WallNorth/WallTiles" instance=ExtResource("1")]
+position = Vector3(16.5, 2, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="WallSouth" type="StaticBody3D" parent="."]
+position = Vector3(0, 4, 19.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallSouth"]
+shape = SubResource("3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallSouth"]
+mesh = SubResource("4")
+material_override = SubResource("8")
+visible = false
+
+[node name="WallTiles" type="Node3D" parent="WallSouth"]
+
+[node name="Lower0" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-16.5, -2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower1" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-9.9, -2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower2" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-3.3, -2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower3" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(3.3, -2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower4" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(9.9, -2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower5" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(16.5, -2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper0" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-16.5, 2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper1" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-9.9, 2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper2" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(-3.3, 2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper3" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(3.3, 2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper4" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(9.9, 2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper5" parent="WallSouth/WallTiles" instance=ExtResource("1")]
+position = Vector3(16.5, 2, 0)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="WallWest" type="StaticBody3D" parent="."]
+position = Vector3(-19.5, 4, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
+shape = SubResource("5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallWest"]
+mesh = SubResource("6")
+material_override = SubResource("8")
+visible = false
+
+[node name="WallTiles" type="Node3D" parent="WallWest"]
+
+[node name="Lower0" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, -16.5)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower1" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, -9.9)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower2" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, -3.3)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower3" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, 3.3)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower4" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, 9.9)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower5" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, 16.5)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper0" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, -16.5)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper1" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, -9.9)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper2" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, -3.3)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper3" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, 3.3)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper4" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, 9.9)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper5" parent="WallWest/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, 16.5)
+rotation = Vector3(0, 1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="WallEast" type="StaticBody3D" parent="."]
+position = Vector3(19.5, 4, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WallEast"]
+shape = SubResource("5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WallEast"]
+mesh = SubResource("6")
+material_override = SubResource("8")
+visible = false
+
+[node name="WallTiles" type="Node3D" parent="WallEast"]
+
+[node name="Lower0" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, -16.5)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower1" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, -9.9)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower2" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, -3.3)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower3" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, 3.3)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower4" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, 9.9)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Lower5" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, -2, 16.5)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper0" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, -16.5)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper1" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, -9.9)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper2" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, -3.3)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper3" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, 3.3)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper4" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, 9.9)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="Upper5" parent="WallEast/WallTiles" instance=ExtResource("1")]
+position = Vector3(0, 2, 16.5)
+rotation = Vector3(0, -1.5708, 0)
+scale = Vector3(3.3, 2, 2)
+
+[node name="CenterBlockA" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.7, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CenterBlockA"]
+shape = SubResource("9")
+
+[node name="Model" parent="CenterBlockA" instance=ExtResource("1")]
+position = Vector3(0, -1.7, 0)
+scale = Vector3(2.0, 2.0, 2.0)
+
+[node name="CenterBlockB" type="StaticBody3D" parent="."]
+position = Vector3(0, 1.6, 0)
+rotation = Vector3(0, 1.5708, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CenterBlockB"]
+shape = SubResource("10")
+
+[node name="Model" parent="CenterBlockB" instance=ExtResource("1")]
+position = Vector3(0, -1.6, 0)
+scale = Vector3(1.9, 1.9, 1.9)
+
+[node name="NorthArch" type="StaticBody3D" parent="."]
+position = Vector3(4.5, 2.0, -10.5)
+
+[node name="CollisionLeft" type="CollisionShape3D" parent="NorthArch"]
+position = Vector3(-1.2, 0, 0)
+shape = SubResource("12")
+
+[node name="CollisionRight" type="CollisionShape3D" parent="NorthArch"]
+position = Vector3(1.2, 0, 0)
+shape = SubResource("13")
+
+[node name="CollisionTop" type="CollisionShape3D" parent="NorthArch"]
+position = Vector3(0, 1.4, 0)
+shape = SubResource("14")
+
+[node name="Model" parent="NorthArch" instance=ExtResource("2")]
+position = Vector3(0, -2.0, 0)
+scale = Vector3(2.1, 2.1, 2.1)
+
+[node name="WestCover" type="StaticBody3D" parent="."]
+position = Vector3(-8.5, 1.4, -6.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestCover"]
+shape = SubResource("11")
+
+[node name="Model" parent="WestCover" instance=ExtResource("1")]
+position = Vector3(0, -1.4, 0)
+scale = Vector3(1.5, 1.5, 1.5)
+
+[node name="EastCover" type="StaticBody3D" parent="."]
+position = Vector3(9.0, 1.4, 5.5)
+rotation = Vector3(0, 1.5708, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastCover"]
+shape = SubResource("11")
+
+[node name="Model" parent="EastCover" instance=ExtResource("1")]
+position = Vector3(0, -1.4, 0)
+scale = Vector3(1.5, 1.5, 1.5)
+
+[node name="PillarWestSouth" type="StaticBody3D" parent="."]
+position = Vector3(-11.0, 1.9, 10.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PillarWestSouth"]
+shape = SubResource("15")
+
+[node name="Model" parent="PillarWestSouth" instance=ExtResource("3")]
+position = Vector3(0, -1.9, 0)
+scale = Vector3(2.0, 2.0, 2.0)
+
+[node name="PillarEastSouth" type="StaticBody3D" parent="."]
+position = Vector3(11.0, 1.9, 10.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PillarEastSouth"]
+shape = SubResource("15")
+
+[node name="Model" parent="PillarEastSouth" instance=ExtResource("3")]
+position = Vector3(0, -1.9, 0)
+scale = Vector3(2.0, 2.0, 2.0)
+
+[node name="CrateCoverA" type="StaticBody3D" parent="."]
+position = Vector3(-3.5, 0.7, 8.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CrateCoverA"]
+shape = SubResource("16")
+
+[node name="Model" parent="CrateCoverA" instance=ExtResource("4")]
+position = Vector3(0, -0.7, 0)
+scale = Vector3(1.6, 1.6, 1.6)
+
+[node name="CrateCoverB" type="StaticBody3D" parent="."]
+position = Vector3(6.5, 0.7, -2.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CrateCoverB"]
+shape = SubResource("16")
+
+[node name="Model" parent="CrateCoverB" instance=ExtResource("4")]
+position = Vector3(0, -0.7, 0)
+scale = Vector3(1.6, 1.6, 1.6)
+
+[node name="BarrelCoverA" type="StaticBody3D" parent="."]
+position = Vector3(2.5, 0.65, 11.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BarrelCoverA"]
+shape = SubResource("17")
+
+[node name="Model" parent="BarrelCoverA" instance=ExtResource("5")]
+position = Vector3(0, -0.65, 0)
+scale = Vector3(1.5, 1.5, 1.5)
+
+[node name="BarrelCoverB" type="StaticBody3D" parent="."]
+position = Vector3(-12.0, 0.65, -8.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BarrelCoverB"]
+shape = SubResource("17")
+
+[node name="Model" parent="BarrelCoverB" instance=ExtResource("5")]
+position = Vector3(0, -0.65, 0)
+scale = Vector3(1.5, 1.5, 1.5)
+
+[node name="WallTorchNorth" parent="." instance=ExtResource("6")]
+position = Vector3(0, 3.2, -18.7)
+scale = Vector3(1.4, 1.4, 1.4)
+
+[node name="WallTorchSouth" parent="." instance=ExtResource("6")]
+position = Vector3(0, 3.2, 18.7)
+rotation = Vector3(0, 3.14159, 0)
+scale = Vector3(1.4, 1.4, 1.4)

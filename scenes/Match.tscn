@@ -1,15 +1,15 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/match.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/world/Arena_Quaternius.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/world/Arena_Dungeon.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/HudPlaceholder.tscn" id="3"]
 
 [sub_resource type="Environment" id="1"]
 background_mode = 1
-background_color = Color(0.16, 0.17, 0.2, 1)
+background_color = Color(0.19, 0.18, 0.17, 1)
 ambient_light_source = 2
-ambient_light_color = Color(0.8, 0.82, 0.86, 1)
-ambient_light_energy = 0.8
+ambient_light_color = Color(0.9, 0.82, 0.7, 1)
+ambient_light_energy = 1.45
 
 [node name="Match" type="Node3D"]
 script = ExtResource("1")
@@ -23,7 +23,8 @@ environment = SubResource("1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 rotation = Vector3(-0.9, -0.75, 0)
-light_energy = 1.5
+light_energy = 2.35
+light_color = Color(0.98, 0.9, 0.78, 1)
 shadow_enabled = true
 
 [node name="HUD" parent="." instance=ExtResource("3")]

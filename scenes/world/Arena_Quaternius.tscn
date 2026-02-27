@@ -15,16 +15,16 @@ size = Vector3(40, 1, 40)
 size = Vector3(40, 1, 40)
 
 [sub_resource type="BoxShape3D" id="3"]
-size = Vector3(40, 4, 1)
+size = Vector3(40, 8, 1)
 
 [sub_resource type="BoxMesh" id="4"]
-size = Vector3(40, 4, 1)
+size = Vector3(40, 8, 1)
 
 [sub_resource type="BoxShape3D" id="5"]
-size = Vector3(1, 4, 40)
+size = Vector3(1, 8, 40)
 
 [sub_resource type="BoxMesh" id="6"]
-size = Vector3(1, 4, 40)
+size = Vector3(1, 8, 40)
 
 [sub_resource type="StandardMaterial3D" id="7"]
 albedo_color = Color(0.31, 0.34, 0.38, 1)
@@ -79,8 +79,18 @@ shape = SubResource("1")
 mesh = SubResource("2")
 material_override = SubResource("7")
 
+[node name="Ceiling" type="StaticBody3D" parent="."]
+position = Vector3(0, 8.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ceiling"]
+mesh = SubResource("2")
+material_override = SubResource("8")
+
 [node name="WallNorth" type="StaticBody3D" parent="."]
-position = Vector3(0, 2, -19.5)
+position = Vector3(0, 4, -19.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WallNorth"]
 shape = SubResource("3")
@@ -90,7 +100,7 @@ mesh = SubResource("4")
 material_override = SubResource("8")
 
 [node name="WallSouth" type="StaticBody3D" parent="."]
-position = Vector3(0, 2, 19.5)
+position = Vector3(0, 4, 19.5)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WallSouth"]
 shape = SubResource("3")
@@ -100,7 +110,7 @@ mesh = SubResource("4")
 material_override = SubResource("8")
 
 [node name="WallWest" type="StaticBody3D" parent="."]
-position = Vector3(-19.5, 2, 0)
+position = Vector3(-19.5, 4, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WallWest"]
 shape = SubResource("5")
@@ -110,7 +120,7 @@ mesh = SubResource("6")
 material_override = SubResource("8")
 
 [node name="WallEast" type="StaticBody3D" parent="."]
-position = Vector3(19.5, 2, 0)
+position = Vector3(19.5, 4, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WallEast"]
 shape = SubResource("5")
