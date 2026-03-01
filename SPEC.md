@@ -39,6 +39,8 @@ Non-goals (for MVP):
 - Controls: WASD + mouse look
 - Jump: OFF by default
 - Sprint: ON by default (no stamina) (optional to implement early or later)
+- Default catcher count: 1
+- There must always be at least 1 runner, so `catcher_count <= player_count - 1`
 
 ### 1.5 Tie Rules
 - Winners are **all players** with the lowest `times_caught`.
@@ -102,20 +104,23 @@ Acceptance for MVP-0:
 2) Host creates lobby OR joins lobby
 3) Lobby shows players + ready state
 4) Host starts match
-5) Match in a 3D arena: one player is "It"
-6) Tagging switches "It"
+5) Match in a 3D arena: one or more players are catchers
+6) Catching transfers catcher status from catcher to victim
 7) Track `times_caught` (victim increments on tag)
 8) Timer ends match
 9) Results screen shows ranking and winners
 10) Return to lobby or main menu
 
 ### 3.2 Tagging Rules
-- Exactly one player is "It".
-- If "It" touches another player:
-  - target becomes "It" immediately
+- There is always at least one catcher and at least one runner.
+- A match may have multiple catchers.
+- If a catcher touches a runner:
+  - target becomes a catcher immediately
+  - the original catcher stops being a catcher
   - target `times_caught += 1`
-- Tagging is validated by host:
-  - only current "It" can tag
+- Catching is validated by host:
+  - only current catchers can catch
+  - catchers cannot catch other catchers
   - host checks distance <= `tag_radius_m` + epsilon
 
 ### 3.3 Win Condition
@@ -170,7 +175,7 @@ UI must be separated from game logic.
 - `Game.match_state_changed()`
 - `Game.score_changed()`
 - `Game.timer_changed(time_remaining_s: int)`
-- `Game.it_changed(it_peer_id: int)`
+- `Game.it_changed(it_peer_id: int)` (primary catcher / compatibility signal)
 
 ### 5.4 Scene Layout
 - `scenes/MainMenu.tscn`
@@ -196,6 +201,7 @@ Fields:
 - `port: int = 24567`
 - `tag_radius_m: float = 1.2`
 - `arena_id: String = "default"`
+- `catcher_count: int = 1`
 
 Host-controlled. Broadcast to all at match start.
 
@@ -219,7 +225,8 @@ Fields:
 - `config: MatchConfig`
 - `players: Dictionary[int, PlayerInfo]`
 - `stats: Dictionary[int, PlayerMatchStats]`
-- `it_peer_id: int`
+- `catcher_peer_ids: Array[int]`
+- `it_peer_id: int` (legacy convenience field for primary catcher / UI highlight)
 - `match_start_unix_ms: int`
 - `time_remaining_s: int`
 - `is_running: bool`
@@ -275,13 +282,13 @@ Approach:
 - Remote players are interpolated.
 
 Security:
-- Host validates tagging via distance checks.
+- Host validates catches via distance checks.
 - (Optional later) Host validates max speed / teleport prevention.
 
 ### 9.2 Tagging Validation
-- Only "It" can tag.
-- Client may propose tag attempt:
-  - Host checks: distance(it, target) <= tag_radius_m + epsilon
+- Only catchers can catch.
+- Client may propose catch attempt:
+  - Host checks: distance(catcher, target) <= tag_radius_m + epsilon
 - Host applies and broadcasts result.
 
 ---
@@ -295,6 +302,7 @@ Conventions:
 Client -> Host:
 - `rpc_req_join(display_name: String, client_version: int)`
 - `rpc_req_set_ready(is_ready: bool)`
+- `rpc_req_set_character(character_id: String)`
 
 Host -> Client (targeted):
 - `rpc_sync_join_result(ok: bool, message: String, assigned_peer_id: int)`
@@ -307,7 +315,7 @@ Host -> All:
 
 ### 10.2 Match Start & Loading
 Host -> All:
-- `rpc_sync_start_match(config: Dictionary, it_peer_id: int, seed: int)`
+- `rpc_sync_start_match(config: Dictionary, it_peer_id: int, seed: int, catcher_ids: Array[int])`
 
 Client -> Host:
 - `rpc_req_match_loaded()`
@@ -327,10 +335,10 @@ Rate:
 
 ### 10.4 Tag Attempts
 Client -> Host:
-- `rpc_req_tag_attempt(target_peer_id: int, my_pos: Vector3)` (optional but recommended)
+- `rpc_req_catch_attempt(target_peer_id: int, my_pos: Vector3)` (optional but recommended)
 
 Host -> All:
-- `rpc_sync_it_changed(new_it_peer_id: int, victim_peer_id: int, victim_times_caught: int)`
+- `rpc_sync_catch_applied(catcher_peer_id: int, victim_peer_id: int, victim_times_caught: int, catcher_ids: Array[int], freeze_until_unix_ms: int)`
 
 ### 10.5 Timer & End
 Host -> All (once per second or on change):
@@ -354,13 +362,13 @@ Ranking:
 - Camera rig (only enabled for local player)
 - `TagArea` as Area3D (sphere/capsule)
   - radius approx `tag_radius_m`
-  - only active for local player if local player is "It"
+  - only active for local player if local player is a catcher
 - Visual: simple capsule/mesh placeholder
 
 ### 11.2 Tag Detection
-Local "It" detects overlap and requests tag:
-- On overlap begin, call `rpc_req_tag_attempt(target_peer_id, my_pos)`
-- Host validates and broadcasts `rpc_sync_it_changed`
+Local catcher detects overlap and requests catch:
+- On overlap begin, call `rpc_req_catch_attempt(target_peer_id, my_pos)`
+- Host validates and broadcasts `rpc_sync_catch_applied`
 
 ---
 
@@ -378,8 +386,8 @@ Tooling + structure + docs (see section 2)
 - Start match loads Match for all peers
 
 ### MVP-3 Tagging + Score + Timer
-- Deterministic initial "It" (host)
-- Host validates tags, switches "It"
+- Deterministic initial catcher set (host)
+- Host validates catches and transfers catcher role to the victim
 - Track times_caught and show scoreboard
 - Timer ends match, show Results with tie support
 
@@ -420,7 +428,7 @@ Deliverables:
 ## 14) Acceptance Criteria
 MVP Acceptance:
 - Two machines can host/join and play on LAN.
-- Tagging is consistent across peers; "It" changes correctly.
+- Catching is consistent across peers; catcher status transfers correctly.
 - Score + timer consistent across peers.
 - Results show correct ranking with ties.
 - Exports run on Windows/macOS/Linux.
