@@ -1,27 +1,27 @@
 # Huge Buildup
 
-3D multiplayer Tag game in Godot 4.x.
+Lightweight 3D multiplayer tag game built with Godot 4.x and typed GDScript.
 
-Current status: MVP-0 Bootstrap (project + tooling baseline).
+Current status: MVP-2 complete, MVP-3 partially implemented.
 
 ## Prerequisites
 
 - Godot 4.x
-- Python 3.10+ (for dev tooling)
+- Python 3.10+ for dev tooling
 - PowerShell 7 (`pwsh`) on Windows
 
-## Open and Run the Project
+## Open and Run
 
 ### Option A: Godot directly
 
-1. Open project in editor:
+Open the editor:
 
 ```powershell
-$env:GODOT4="C:\tmp\godot\Godot_v4.x-stable_win64.exe"
+$env:GODOT4="C:\path\to\Godot_v4.x-stable_win64.exe"
 & $env:GODOT4 --editor --path .
 ```
 
-2. Run project:
+Run the project:
 
 ```powershell
 & $env:GODOT4 --path .
@@ -29,21 +29,31 @@ $env:GODOT4="C:\tmp\godot\Godot_v4.x-stable_win64.exe"
 
 ### Option B: VS Code
 
-- Use `Run and Debug`:
-  - `Godot: Open Editor`
-  - `Godot: Run Project`
-- Ensure `GODOT4` points to your Godot executable.
+Use `Run and Debug` with:
 
-## Dev Tooling (gdtoolkit)
+- `Godot: Open Editor`
+- `Godot: Run Project`
 
-### Install
+`GODOT4` must point to your Godot executable.
+
+## Current Feature Set
+
+- Main menu with host/join flow via IP and port
+- Lobby with player list, ready state, character selection, and catcher count
+- Match scene with third-person movement and transform replication
+- Host-validated catch attempts, score tracking, timer sync, and results screen
+- Persistent local settings for display name, mouse sensitivity, and character choice
+
+## Dev Tooling
+
+`gdtoolkit` is used for linting and formatting.
+
+Install:
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\python -m pip install -r requirements-dev.txt
 ```
-
-### Lint / Format
 
 Windows:
 
@@ -87,5 +97,7 @@ requirements-dev.txt
 
 ## Notes
 
-- Architecture rule: keep UI and game logic separated (autoloads + signals).
-- MVP-0 intentionally has no gameplay implementation yet.
+- UI and game logic are separated through autoload singletons and signals.
+- The current implementation already goes beyond MVP-0.
+- The current codebase supports multiple catchers, which differs from the original single-"It" wording in `SPEC.md`.
+- See `docs/STATUS.md` for the current milestone audit and known spec deviations.
