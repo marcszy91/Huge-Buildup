@@ -1,3 +1,9 @@
+## [1.0.0-alpha.5](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.4...v1.0.0-alpha.5) (2026-03-02)
+
+### Bug Fixes
+
+* enable ETC2 ASTC texture format for macOS export preset ([dbb53ab](https://github.com/marcszy91/Huge-Buildup/commit/dbb53abc18603dd552507b994069f231ab7ae87c))
+
 ## [1.0.0-alpha.4](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.3...v1.0.0-alpha.4) (2026-03-02)
 
 ### Bug Fixes
