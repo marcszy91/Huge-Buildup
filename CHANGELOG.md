@@ -1,3 +1,9 @@
+## [1.0.0-alpha.6](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.5...v1.0.0-alpha.6) (2026-03-02)
+
+### Bug Fixes
+
+* add rendering section for ETC2 ASTC texture format support ([50ebafe](https://github.com/marcszy91/Huge-Buildup/commit/50ebafe6fa88a7ac5612d9369015198e55369d3b))
+
 ## [1.0.0-alpha.5](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.4...v1.0.0-alpha.5) (2026-03-02)
 
 ### Bug Fixes
