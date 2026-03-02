@@ -7,7 +7,6 @@
 
 # Godot export artifacts
 /export/
-/export_presets.cfg
 
 # Build outputs and archives
 build/
