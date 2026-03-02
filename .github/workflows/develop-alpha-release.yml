@@ -1,0 +1,118 @@
+name: Develop Alpha Release
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write
+
+concurrency:
+  group: develop-alpha-release
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.6.1
+  PROJECT_NAME: HugeBuildup
+
+jobs:
+  prepare-release:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+      release_name: ${{ steps.meta.outputs.release_name }}
+      notes_path: ${{ steps.meta.outputs.notes_path }}
+      release_sha: ${{ steps.commit.outputs.release_sha }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Calculate alpha version and changelog
+        id: meta
+        run: python scripts/release/prepare_alpha_release.py
+
+      - name: Commit release metadata
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md VERSION project.godot release-notes.md
+          if git diff --cached --quiet; then
+            echo "release_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore(release): ${{ steps.meta.outputs.version }} [skip ci]"
+          git push origin HEAD:develop
+          echo "release_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push tag
+        run: |
+          git tag -a "${{ steps.meta.outputs.tag }}" -m "${{ steps.meta.outputs.release_name }}"
+          git push origin "${{ steps.meta.outputs.tag }}"
+
+  build-and-release:
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out tagged release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare-release.outputs.release_sha }}
+          fetch-depth: 0
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y unzip zip p7zip-full
+
+      - name: Download Godot editor and export templates
+        run: |
+          mkdir -p .ci/godot ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          curl -L -o .ci/godot/godot.zip "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          curl -L -o .ci/godot/templates.tpz "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q .ci/godot/godot.zip -d .ci/godot/editor
+          unzip -q .ci/godot/templates.tpz -d ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          chmod +x .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64
+
+      - name: Export release builds
+        run: |
+          mkdir -p dist/windows dist/linux dist/macos build/windows build/linux build/macos
+          .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path . --export-release "Windows Desktop" "build/windows/${PROJECT_NAME}.exe"
+          .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path . --export-release "Linux/BSD" "build/linux/${PROJECT_NAME}.x86_64"
+          .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path . --export-release "macOS" "build/macos/${PROJECT_NAME}.zip"
+
+      - name: Package platform archives
+        run: |
+          VERSION="${{ needs.prepare-release.outputs.version }}"
+          cp VERSION dist/VERSION.txt
+          cp CHANGELOG.md dist/CHANGELOG.md
+          (
+            cd build/windows
+            zip -9 -r "../../dist/${PROJECT_NAME}-${VERSION}-windows.zip" .
+          )
+          (
+            cd build/linux
+            tar -czf "../../dist/${PROJECT_NAME}-${VERSION}-linux.tar.gz" .
+          )
+          cp "build/macos/${PROJECT_NAME}.zip" "dist/${PROJECT_NAME}-${VERSION}-macos.zip"
+
+      - name: Create GitHub pre-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ needs.prepare-release.outputs.tag }}" \
+            "dist/${PROJECT_NAME}-${{ needs.prepare-release.outputs.version }}-windows.zip" \
+            "dist/${PROJECT_NAME}-${{ needs.prepare-release.outputs.version }}-linux.tar.gz" \
+            "dist/${PROJECT_NAME}-${{ needs.prepare-release.outputs.version }}-macos.zip" \
+            --repo "${{ github.repository }}" \
+            --title "${{ needs.prepare-release.outputs.release_name }}" \
+            --notes-file "${{ needs.prepare-release.outputs.notes_path }}" \
+            --prerelease
