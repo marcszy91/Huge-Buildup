@@ -1,3 +1,9 @@
+## [1.0.0-alpha.2](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2026-03-02)
+
+### Bug Fixes
+
+* update export presets configuration for Windows, Linux, and macOS ([e531296](https://github.com/marcszy91/Huge-Buildup/commit/e53129611aeac2d731fdf2bf02bbf0498907c97e))
+
 ## 1.0.0-alpha.1 (2026-03-02)
 
 ### Features
