@@ -1,3 +1,9 @@
+## [1.0.0-alpha.4](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.3...v1.0.0-alpha.4) (2026-03-02)
+
+### Bug Fixes
+
+* update Linux export preset name and platform in configuration ([0ec046f](https://github.com/marcszy91/Huge-Buildup/commit/0ec046ff8f648c31b681ea8577fe456bc08074b8))
+
 ## [1.0.0-alpha.3](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.2...v1.0.0-alpha.3) (2026-03-02)
 
 ### Bug Fixes
