@@ -7,6 +7,10 @@ const TURN_SPEED_RAD: float = 10.0
 const MOUSE_SENSITIVITY: float = 0.0024
 const CAMERA_PITCH_MIN_RAD: float = deg_to_rad(-50.0)
 const CAMERA_PITCH_MAX_RAD: float = deg_to_rad(-10.0)
+const CAMERA_COLLISION_MARGIN: float = 0.18
+const CAMERA_MIN_DISTANCE: float = 2.45
+const CAMERA_HIDE_CHARACTER_DISTANCE: float = 3.4
+const CAMERA_DISTANCE_LERP_SPEED: float = 16.0
 const DEFAULT_IDLE_ANIMATION_NAME: String = "Idle"
 const DEFAULT_WALK_ANIMATION_NAME: String = "Walk"
 const DEFAULT_RUN_ANIMATION_NAME: String = "Run"
@@ -29,6 +33,8 @@ var _remote_target_yaw: float = 0.0
 var _character_animation_player: AnimationPlayer
 var _current_character_animation_name: String = ""
 var _character_id: String = DEFAULT_CHARACTER_ID
+var _camera_default_local_position: Vector3 = Vector3.ZERO
+var _camera_target_distance: float = 0.0
 
 
 func _ready() -> void:
@@ -41,6 +47,9 @@ func _ready() -> void:
 	_remote_target_yaw = rotation.y
 	if _camera_yaw != null:
 		_camera_yaw.rotation.y = rotation.y
+	if _camera != null:
+		_camera_default_local_position = _camera.position
+		_camera_target_distance = _camera_default_local_position.length()
 	_apply_character_visual()
 	_setup_character_animation()
 	_apply_control_mode()
@@ -164,6 +173,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	move_and_slide()
+	_update_camera_collision(delta)
 	_update_character_animation(move_dir.length_squared() > 0.0)
 
 
@@ -179,6 +189,38 @@ func _apply_control_mode() -> void:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	else:
 		velocity = Vector3.ZERO
+
+
+func _update_camera_collision(delta: float) -> void:
+	if _camera == null or _camera_pitch == null or not _is_local_controlled:
+		return
+
+	var origin: Vector3 = _camera_pitch.global_position
+	var desired_camera_position: Vector3 = _camera_pitch.to_global(_camera_default_local_position)
+	var max_distance: float = _camera_default_local_position.length()
+	var target_distance: float = max_distance
+	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		origin, desired_camera_position
+	)
+	query.exclude = [get_rid()]
+	query.collide_with_areas = false
+	var result: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
+
+	if not result.is_empty():
+		var hit_position: Vector3 = result["position"]
+		var hit_distance: float = origin.distance_to(hit_position) - CAMERA_COLLISION_MARGIN
+		target_distance = clampf(hit_distance, CAMERA_MIN_DISTANCE, max_distance)
+
+	var local_direction: Vector3 = _camera_default_local_position.normalized()
+	_camera_target_distance = move_toward(
+		_camera_target_distance,
+		target_distance,
+		CAMERA_DISTANCE_LERP_SPEED * delta
+	)
+	_camera.position = local_direction * _camera_target_distance
+
+	if _character_visual != null:
+		_character_visual.visible = _camera_target_distance >= CAMERA_HIDE_CHARACTER_DISTANCE
 
 
 func _setup_character_animation() -> void:
