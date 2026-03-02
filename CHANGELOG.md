@@ -1,3 +1,9 @@
+## [1.0.0-alpha.3](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.2...v1.0.0-alpha.3) (2026-03-02)
+
+### Bug Fixes
+
+* update Godot export templates path for proper installation ([1af5b06](https://github.com/marcszy91/Huge-Buildup/commit/1af5b0604987122a694199af724cf2c2a1f5c202))
+
 ## [1.0.0-alpha.2](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2026-03-02)
 
 ### Bug Fixes
