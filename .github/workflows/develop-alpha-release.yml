@@ -17,57 +17,49 @@ env:
   PROJECT_NAME: HugeBuildup
 
 jobs:
-  prepare-release:
+  release:
     if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.meta.outputs.version }}
-      tag: ${{ steps.meta.outputs.tag }}
-      release_name: ${{ steps.meta.outputs.release_name }}
-      notes_path: ${{ steps.meta.outputs.notes_path }}
-      release_sha: ${{ steps.commit.outputs.release_sha }}
+      published: ${{ steps.semantic.outputs.new_release_published }}
+      version: ${{ steps.semantic.outputs.new_release_version }}
+      tag: ${{ steps.semantic.outputs.new_release_git_tag }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Calculate alpha version and changelog
-        id: meta
-        run: python scripts/release/prepare_alpha_release.py
+      - name: Install release dependencies
+        run: npm install
 
-      - name: Commit release metadata
-        id: commit
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md VERSION project.godot release-notes.md
-          if git diff --cached --quiet; then
-            echo "release_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git commit -m "chore(release): ${{ steps.meta.outputs.version }} [skip ci]"
-          git push origin HEAD:develop
-          echo "release_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Create and push tag
-        run: |
-          git tag -a "${{ steps.meta.outputs.tag }}" -m "${{ steps.meta.outputs.release_name }}"
-          git push origin "${{ steps.meta.outputs.tag }}"
+      - name: Run semantic-release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v4
+        with:
+          semantic_version: 24
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-release:
-    needs: prepare-release
+    needs: release
+    if: ${{ needs.release.outputs.published == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check out tagged release commit
+      - name: Check out release tag
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.prepare-release.outputs.release_sha }}
+          ref: ${{ needs.release.outputs.tag }}
           fetch-depth: 0
 
       - name: Install build tools
@@ -91,7 +83,7 @@ jobs:
 
       - name: Package platform archives
         run: |
-          VERSION="${{ needs.prepare-release.outputs.version }}"
+          VERSION="${{ needs.release.outputs.version }}"
           cp VERSION dist/VERSION.txt
           cp CHANGELOG.md dist/CHANGELOG.md
           (
@@ -108,11 +100,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ needs.prepare-release.outputs.tag }}" \
-            "dist/${PROJECT_NAME}-${{ needs.prepare-release.outputs.version }}-windows.zip" \
-            "dist/${PROJECT_NAME}-${{ needs.prepare-release.outputs.version }}-linux.tar.gz" \
-            "dist/${PROJECT_NAME}-${{ needs.prepare-release.outputs.version }}-macos.zip" \
+          gh release upload "${{ needs.release.outputs.tag }}" \
+            "dist/${PROJECT_NAME}-${{ needs.release.outputs.version }}-windows.zip" \
+            "dist/${PROJECT_NAME}-${{ needs.release.outputs.version }}-linux.tar.gz" \
+            "dist/${PROJECT_NAME}-${{ needs.release.outputs.version }}-macos.zip" \
             --repo "${{ github.repository }}" \
-            --title "${{ needs.prepare-release.outputs.release_name }}" \
-            --notes-file "${{ needs.prepare-release.outputs.notes_path }}" \
-            --prerelease
+            --clobber
