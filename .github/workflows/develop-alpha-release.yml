@@ -79,7 +79,7 @@ jobs:
         run: |
           mkdir -p dist/windows dist/linux dist/macos build/windows build/linux build/macos
           .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path . --export-release "Windows Desktop" "build/windows/${PROJECT_NAME}.exe"
-          .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path . --export-release "Linux/BSD" "build/linux/${PROJECT_NAME}.x86_64"
+          .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path . --export-release "Linux" "build/linux/${PROJECT_NAME}.x86_64"
           .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path . --export-release "macOS" "build/macos/${PROJECT_NAME}.zip"
 
       - name: Package platform archives
