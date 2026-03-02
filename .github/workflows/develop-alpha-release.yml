@@ -71,7 +71,8 @@ jobs:
           curl -L -o .ci/godot/godot.zip "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
           curl -L -o .ci/godot/templates.tpz "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
           unzip -q .ci/godot/godot.zip -d .ci/godot/editor
-          unzip -q .ci/godot/templates.tpz -d ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          unzip -q .ci/godot/templates.tpz -d .ci/godot/templates
+          cp -R .ci/godot/templates/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/
           chmod +x .ci/godot/editor/Godot_v${GODOT_VERSION}-stable_linux.x86_64
 
       - name: Export release builds
