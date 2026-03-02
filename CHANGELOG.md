@@ -1,3 +1,9 @@
+## [1.0.0-alpha.7](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.6...v1.0.0-alpha.7) (2026-03-02)
+
+### Bug Fixes
+
+* add application bundle identifier for macOS export preset ([95de572](https://github.com/marcszy91/Huge-Buildup/commit/95de572197c0fa763a23e9d020a309fd8cc01bb9))
+
 ## [1.0.0-alpha.6](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.5...v1.0.0-alpha.6) (2026-03-02)
 
 ### Bug Fixes
