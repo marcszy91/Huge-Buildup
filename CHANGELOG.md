@@ -1,3 +1,10 @@
+## [1.0.0-alpha.11](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.10...v1.0.0-alpha.11) (2026-03-03)
+
+### Features
+
+* enhance player controller with jump mechanics and animation handling ([99660b4](https://github.com/marcszy91/Huge-Buildup/commit/99660b46d1469f8d445a642563f55ac239123058))
+* implement powerup mechanics including collection, effects, and teleportation ([7276ac1](https://github.com/marcszy91/Huge-Buildup/commit/7276ac150ccd67ad97c6e6f6f27127ceda36d893))
+
 ## [1.0.0-alpha.10](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.9...v1.0.0-alpha.10) (2026-03-03)
 
 ### Features
