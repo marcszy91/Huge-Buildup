@@ -1,3 +1,9 @@
+## [1.0.0-alpha.8](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.7...v1.0.0-alpha.8) (2026-03-03)
+
+### Features
+
+* add initial HTML, CSS, and JavaScript for github page ([b5aa9ec](https://github.com/marcszy91/Huge-Buildup/commit/b5aa9ec0f127af1197fff2044ec717fff89e6e77))
+
 ## [1.0.0-alpha.7](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.6...v1.0.0-alpha.7) (2026-03-02)
 
 ### Bug Fixes
