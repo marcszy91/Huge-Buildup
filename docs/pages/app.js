@@ -5,7 +5,6 @@ const releaseDate = document.getElementById("release-date");
 const releaseLink = document.getElementById("release-link");
 const changelogLink = document.getElementById("changelog-link");
 const repoName = document.getElementById("repo-name");
-const releaseNotes = document.getElementById("release-notes");
 
 const downloadTargets = {
 	windows: document.getElementById("download-windows"),
@@ -75,7 +74,6 @@ async function loadLatestRelease() {
 			releaseVersion.textContent = "Unavailable";
 			releaseChannel.textContent = "Unavailable";
 			releaseDate.textContent = "Unavailable";
-			releaseNotes.textContent = "Publish a release first, then this page will pick it up automatically.";
 			return;
 		}
 
@@ -95,7 +93,6 @@ async function loadLatestRelease() {
 			: "Unknown";
 		releaseLink.href = latestRelease.html_url;
 		changelogLink.href = latestRelease.html_url;
-		releaseNotes.textContent = latestRelease.body?.trim() || "No release notes provided.";
 		statusMessage.textContent = "Latest release loaded.";
 	} catch (error) {
 		console.error(error);
@@ -103,8 +100,6 @@ async function loadLatestRelease() {
 		releaseVersion.textContent = "Error";
 		releaseChannel.textContent = "Error";
 		releaseDate.textContent = "Error";
-		releaseNotes.textContent =
-			"GitHub release data could not be loaded. Check that the repository has public releases and that the page URL follows the standard GitHub Pages format.";
 	}
 }
 
