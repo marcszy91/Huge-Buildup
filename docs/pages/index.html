@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Huge Buildup Downloads</title>
+	<meta name="description" content="Download the latest Huge Buildup build for Windows, macOS, and Linux.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+	<div class="page-shell">
+		<header class="hero">
+			<p class="eyebrow">Huge Buildup</p>
+			<h1>Latest Build Downloads</h1>
+			<p class="hero-copy">
+				Always points to the newest GitHub release for this project.
+			</p>
+			<div class="release-meta">
+				<div class="meta-card">
+					<span class="meta-label">Version</span>
+					<strong id="release-version">Loading...</strong>
+				</div>
+				<div class="meta-card">
+					<span class="meta-label">Channel</span>
+					<strong id="release-channel">Loading...</strong>
+				</div>
+				<div class="meta-card">
+					<span class="meta-label">Published</span>
+					<strong id="release-date">Loading...</strong>
+				</div>
+			</div>
+		</header>
+
+		<main class="content-grid">
+			<section class="downloads-panel">
+				<div class="panel-heading">
+					<p class="eyebrow">Downloads</p>
+					<h2>Pick Your Platform</h2>
+				</div>
+				<div class="download-grid">
+					<a id="download-windows" class="download-card is-disabled" href="#" aria-disabled="true">
+						<span class="platform-tag">Windows</span>
+						<strong>Windows Build</strong>
+						<span class="download-hint">ZIP with executable</span>
+					</a>
+					<a id="download-macos" class="download-card is-disabled" href="#" aria-disabled="true">
+						<span class="platform-tag">macOS</span>
+						<strong>macOS Build</strong>
+						<span class="download-hint">ZIP archive</span>
+					</a>
+					<a id="download-linux" class="download-card is-disabled" href="#" aria-disabled="true">
+						<span class="platform-tag">Linux</span>
+						<strong>Linux Build</strong>
+						<span class="download-hint">tar.gz archive</span>
+					</a>
+				</div>
+				<p id="status-message" class="status-message">Resolving latest release...</p>
+			</section>
+
+			<aside class="details-panel">
+				<div class="panel-heading">
+					<p class="eyebrow">Release</p>
+					<h2>Build Details</h2>
+				</div>
+				<dl class="details-list">
+					<div>
+						<dt>Repository</dt>
+						<dd id="repo-name">Detecting from page URL...</dd>
+					</div>
+					<div>
+						<dt>Release Page</dt>
+						<dd><a id="release-link" href="#" target="_blank" rel="noreferrer">Open on GitHub</a></dd>
+					</div>
+					<div>
+						<dt>Changelog</dt>
+						<dd><a id="changelog-link" href="#" target="_blank" rel="noreferrer">Open release notes</a></dd>
+					</div>
+				</dl>
+				<div class="notes-block">
+					<h3>Notes</h3>
+					<div id="release-notes" class="release-notes">
+						Latest release notes will appear here.
+					</div>
+				</div>
+			</aside>
+		</main>
+	</div>
+
+	<script src="./app.js"></script>
+</body>
+</html>
