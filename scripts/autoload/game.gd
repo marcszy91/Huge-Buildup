@@ -9,6 +9,8 @@ signal it_changed(it_peer_id: int)
 signal results_changed
 signal catchers_changed
 signal freeze_state_changed(peer_id: int)
+signal powerups_changed
+signal powerup_effect_changed(peer_id: int)
 
 const PROTOCOL_VERSION: int = 1
 
@@ -28,6 +30,8 @@ var time_remaining_s: int = 0
 var is_running: bool = false
 var last_results: Array[Dictionary] = []
 var catch_freeze_until_unix_ms: Dictionary[int, int] = {}
+var spawned_powerups: Array[Dictionary] = []
+var active_powerup_effects: Dictionary[int, Dictionary] = {}
 
 
 func reset_lobby() -> void:
@@ -40,6 +44,8 @@ func reset_lobby() -> void:
 	time_remaining_s = 0
 	last_results.clear()
 	catch_freeze_until_unix_ms.clear()
+	spawned_powerups.clear()
+	active_powerup_effects.clear()
 	player_list_changed.emit()
 	score_changed.emit()
 	match_state_changed.emit()
@@ -47,6 +53,7 @@ func reset_lobby() -> void:
 	it_changed.emit(it_peer_id)
 	results_changed.emit()
 	catchers_changed.emit()
+	powerups_changed.emit()
 
 
 func set_config(
@@ -220,6 +227,8 @@ func begin_match(
 	match_start_unix_ms = start_unix_ms
 	last_results.clear()
 	catch_freeze_until_unix_ms.clear()
+	spawned_powerups.clear()
+	active_powerup_effects.clear()
 	for peer_id in players.keys():
 		stats[peer_id] = {"times_caught": 0}
 	if initial_catcher_peer_ids.is_empty():
@@ -233,11 +242,15 @@ func begin_match(
 	score_changed.emit()
 	results_changed.emit()
 	match_state_changed.emit()
+	powerups_changed.emit()
 
 
 func end_match() -> void:
 	is_running = false
+	spawned_powerups.clear()
+	active_powerup_effects.clear()
 	match_state_changed.emit()
+	powerups_changed.emit()
 
 
 func build_results_snapshot() -> Array[Dictionary]:
@@ -415,6 +428,90 @@ func get_peer_freeze_remaining_ms(peer_id: int) -> int:
 	var freeze_until_unix_ms: int = int(catch_freeze_until_unix_ms[peer_id])
 	var now_unix_ms: int = int(Time.get_unix_time_from_system() * 1000)
 	return maxi(0, freeze_until_unix_ms - now_unix_ms)
+
+
+func set_spawned_powerups(next_powerups: Array[Dictionary]) -> void:
+	spawned_powerups = next_powerups.duplicate(true)
+	powerups_changed.emit()
+
+
+func remove_spawned_powerup(powerup_id: int) -> void:
+	var next_powerups: Array[Dictionary] = []
+	for powerup in spawned_powerups:
+		if int(powerup.get("powerup_id", -1)) == powerup_id:
+			continue
+		next_powerups.append(powerup)
+	spawned_powerups = next_powerups
+	powerups_changed.emit()
+
+
+func set_powerup_effect(peer_id: int, effect_type: String, until_unix_ms: int) -> void:
+	if peer_id <= 0:
+		return
+	if effect_type.is_empty() or until_unix_ms <= 0:
+		clear_powerup_effect(peer_id, effect_type)
+		return
+	var effects: Dictionary = active_powerup_effects.get(peer_id, {})
+	effects[effect_type] = until_unix_ms
+	active_powerup_effects[peer_id] = effects
+	powerup_effect_changed.emit(peer_id)
+
+
+func clear_powerup_effect(peer_id: int, effect_type: String) -> void:
+	if peer_id <= 0:
+		return
+	if not active_powerup_effects.has(peer_id):
+		return
+	var effects: Dictionary = active_powerup_effects[peer_id]
+	if effect_type.is_empty():
+		if active_powerup_effects.erase(peer_id):
+			powerup_effect_changed.emit(peer_id)
+		return
+	if not effects.erase(effect_type):
+		return
+	if effects.is_empty():
+		active_powerup_effects.erase(peer_id)
+	else:
+		active_powerup_effects[peer_id] = effects
+	powerup_effect_changed.emit(peer_id)
+
+
+func has_active_powerup_effect(peer_id: int, effect_type: String) -> bool:
+	if peer_id <= 0 or effect_type.is_empty():
+		return false
+	if not active_powerup_effects.has(peer_id):
+		return false
+	var effects: Dictionary = active_powerup_effects[peer_id]
+	if not effects.has(effect_type):
+		return false
+	var until_unix_ms: int = int(effects[effect_type])
+	var now_unix_ms: int = int(Time.get_unix_time_from_system() * 1000)
+	if now_unix_ms >= until_unix_ms:
+		clear_powerup_effect(peer_id, effect_type)
+		return false
+	return true
+
+
+func get_powerup_effect_remaining_ms(peer_id: int, effect_type: String) -> int:
+	if not has_active_powerup_effect(peer_id, effect_type):
+		return 0
+	var effects: Dictionary = active_powerup_effects.get(peer_id, {})
+	var until_unix_ms: int = int(effects.get(effect_type, 0))
+	var now_unix_ms: int = int(Time.get_unix_time_from_system() * 1000)
+	return maxi(0, until_unix_ms - now_unix_ms)
+
+
+func clear_expired_powerup_effects() -> void:
+	var peer_ids: Array[int] = []
+	for peer_id in active_powerup_effects.keys():
+		peer_ids.append(peer_id)
+	for peer_id in peer_ids:
+		var effects: Dictionary = active_powerup_effects.get(peer_id, {})
+		var effect_names: PackedStringArray = PackedStringArray()
+		for effect_name in effects.keys():
+			effect_names.append(str(effect_name))
+		for effect_name in effect_names:
+			has_active_powerup_effect(peer_id, effect_name)
 
 
 func _get_sorted_player_ids() -> Array[int]:

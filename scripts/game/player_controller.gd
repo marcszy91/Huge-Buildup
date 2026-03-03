@@ -2,6 +2,7 @@ extends CharacterBody3D
 
 const CharacterRegistryRef = preload("res://scripts/data/character_registry.gd")
 const RUN_SPEED: float = 8.7
+const SPEED_BOOST_MULTIPLIER: float = 1.35
 const GRAVITY: float = 20.0
 const JUMP_VELOCITY: float = 8.8
 const REMOTE_LERP_SPEED: float = 12.0
@@ -34,6 +35,7 @@ const COLOR_RUNNER_VISIBLE_TO_CATCHER: Color = Color(0.25, 0.55, 0.95, 1.0)
 
 var _is_local_controlled: bool = true
 var _is_frozen: bool = false
+var _is_hidden_from_viewer: bool = false
 var _remote_target_position: Vector3 = Vector3.ZERO
 var _remote_target_yaw: float = 0.0
 @onready var _camera_yaw: Node3D = $CameraYaw
@@ -79,6 +81,12 @@ func set_network_target_transform(pos: Vector3, yaw: float) -> void:
 	_remote_target_yaw = yaw
 
 
+func snap_to_world_position(pos: Vector3) -> void:
+	global_position = pos
+	_remote_target_position = pos
+	velocity = Vector3.ZERO
+
+
 func set_frozen(is_frozen: bool) -> void:
 	_is_frozen = is_frozen
 	if _is_frozen:
@@ -114,6 +122,14 @@ func set_role_visual(
 	else:
 		color = COLOR_NEUTRAL
 	material.albedo_color = color
+
+
+func set_invisible_state(is_hidden_from_viewer: bool) -> void:
+	_is_hidden_from_viewer = is_hidden_from_viewer
+	if _character_visual != null:
+		_character_visual.visible = not _is_hidden_from_viewer
+	if _mesh != null:
+		_mesh.visible = not _is_hidden_from_viewer
 
 
 func _process(delta: float) -> void:
@@ -168,6 +184,9 @@ func _physics_process(delta: float) -> void:
 	var move_dir: Vector3 = (
 		(camera_right * input_vec.x + camera_forward * -input_vec.y).normalized()
 	)
+	var move_speed: float = RUN_SPEED
+	if Game.has_active_powerup_effect(Net.my_peer_id(), "speed"):
+		move_speed *= SPEED_BOOST_MULTIPLIER
 	if move_dir.length_squared() > 0.0:
 		var target_yaw: float = atan2(move_dir.x, move_dir.z)
 		var previous_root_yaw: float = rotation.y
@@ -177,8 +196,8 @@ func _physics_process(delta: float) -> void:
 			# Compensate root turn so mouse-look camera yaw stays visually stable in world space.
 			_camera_yaw.rotation.y += previous_root_yaw - rotation.y
 
-	velocity.x = move_dir.x * RUN_SPEED
-	velocity.z = move_dir.z * RUN_SPEED
+	velocity.x = move_dir.x * move_speed
+	velocity.z = move_dir.z * move_speed
 
 	if is_on_floor():
 		if Input.is_action_just_pressed("jump"):
@@ -236,7 +255,10 @@ func _update_camera_collision(delta: float) -> void:
 	_camera.position = local_direction * _camera_target_distance
 
 	if _character_visual != null:
-		_character_visual.visible = _camera_target_distance >= CAMERA_HIDE_CHARACTER_DISTANCE
+		_character_visual.visible = (
+			not _is_hidden_from_viewer
+			and _camera_target_distance >= CAMERA_HIDE_CHARACTER_DISTANCE
+		)
 
 
 func _setup_character_animation() -> void:

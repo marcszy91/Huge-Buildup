@@ -7,6 +7,7 @@ signal peer_disconnected(peer_id: int)
 signal join_result(ok: bool, message: String)
 signal player_transform_received(peer_id: int, pos: Vector3, yaw: float)
 signal catch_applied(catcher_peer_id: int, victim_peer_id: int)
+signal powerup_teleport_received(peer_id: int, pos: Vector3)
 
 enum ConnectionState {
 	DISCONNECTED,
@@ -18,12 +19,44 @@ enum ConnectionState {
 const DEFAULT_PORT: int = 24567
 const DEFAULT_MAX_PLAYERS: int = 16
 const NEW_CATCHER_FREEZE_MS: int = 3000
+const POWERUP_TARGET_COUNT: int = 3
+const POWERUP_PICKUP_RADIUS_M: float = 1.4
+const POWERUP_INVISIBLE_DURATION_MS: int = 6000
+const POWERUP_SPEED_DURATION_MS: int = 5000
+const POWERUP_SPAWN_POINTS: Array[Vector3] = [
+	Vector3(-14.0, 0.9, -12.0),
+	Vector3(0.0, 0.9, -14.0),
+	Vector3(14.0, 0.9, -12.0),
+	Vector3(-14.0, 0.9, 0.0),
+	Vector3(14.0, 0.9, 0.0),
+	Vector3(-14.0, 0.9, 12.0),
+	Vector3(0.0, 0.9, 14.0),
+	Vector3(14.0, 0.9, 12.0),
+	Vector3(-8.0, 0.9, -9.0),
+	Vector3(8.0, 0.9, -8.0),
+	Vector3(-10.0, 0.9, 8.0),
+	Vector3(10.0, 0.9, 8.0),
+	Vector3(0.0, 0.9, 6.0),
+]
+const POWERUP_TELEPORT_POINTS: Array[Vector3] = [
+	Vector3(-12.0, 1.0, -12.0),
+	Vector3(0.0, 1.0, -12.0),
+	Vector3(12.0, 1.0, -12.0),
+	Vector3(-12.0, 1.0, 0.0),
+	Vector3(12.0, 1.0, 0.0),
+	Vector3(-12.0, 1.0, 12.0),
+	Vector3(0.0, 1.0, 12.0),
+	Vector3(12.0, 1.0, 12.0),
+	Vector3(-6.0, 1.0, 0.0),
+	Vector3(6.0, 1.0, 0.0),
+]
 const CharacterRegistryRef = preload("res://scripts/data/character_registry.gd")
 
 var connection_state: int = ConnectionState.DISCONNECTED
 var _next_join_index: int = 1
 var _last_synced_time_remaining: int = -1
 var _host_player_positions: Dictionary = {}
+var _next_powerup_id: int = 1
 
 
 func _ready() -> void:
@@ -42,6 +75,9 @@ func _process(_delta: float) -> void:
 		return
 	if not Game.is_running:
 		return
+
+	Game.clear_expired_powerup_effects()
+	_host_ensure_powerups()
 
 	var now_unix_ms: int = int(Time.get_unix_time_from_system() * 1000)
 	var elapsed_ms: int = max(0, now_unix_ms - Game.match_start_unix_ms)
@@ -89,6 +125,7 @@ func disconnect_from_session() -> void:
 		multiplayer.multiplayer_peer = null
 	_last_synced_time_remaining = -1
 	_host_player_positions.clear()
+	_next_powerup_id = 1
 	_set_state(ConnectionState.DISCONNECTED)
 
 
@@ -155,6 +192,15 @@ func request_catch_attempt(target_peer_id: int, my_pos: Vector3) -> void:
 		_host_handle_catch_attempt(my_peer_id(), target_peer_id, my_pos)
 		return
 	rpc_id(1, "rpc_req_catch_attempt", target_peer_id, my_pos)
+
+
+func request_collect_powerup(powerup_id: int, my_pos: Vector3) -> void:
+	if not Game.is_running:
+		return
+	if is_host():
+		_host_handle_powerup_collect(my_peer_id(), powerup_id, my_pos)
+		return
+	rpc_id(1, "rpc_req_collect_powerup", powerup_id, my_pos)
 
 
 func is_host() -> bool:
@@ -305,6 +351,7 @@ func rpc_sync_start_match(
 	Game.set_config(max_players, match_duration_s, port, tag_radius_m, arena_id, catcher_count)
 	var start_unix_ms: int = int(Time.get_unix_time_from_system() * 1000)
 	_last_synced_time_remaining = -1
+	_next_powerup_id = 1
 	Game.begin_match(start_unix_ms, it_peer_id, catcher_ids)
 	App.goto_match()
 
@@ -343,6 +390,14 @@ func rpc_req_catch_attempt(target_peer_id: int, my_pos: Vector3) -> void:
 	_host_handle_catch_attempt(sender_id, target_peer_id, my_pos)
 
 
+@rpc("any_peer", "reliable")
+func rpc_req_collect_powerup(powerup_id: int, my_pos: Vector3) -> void:
+	if not is_host():
+		return
+	var sender_id: int = multiplayer.get_remote_sender_id()
+	_host_handle_powerup_collect(sender_id, powerup_id, my_pos)
+
+
 @rpc("authority", "call_local", "reliable")
 func rpc_sync_catch_applied(
 	catcher_peer_id: int,
@@ -355,6 +410,24 @@ func rpc_sync_catch_applied(
 	Game.set_catchers(catcher_ids)
 	Game.set_catch_freeze_until(victim_peer_id, freeze_until_unix_ms)
 	catch_applied.emit(catcher_peer_id, victim_peer_id)
+
+
+@rpc("authority", "call_local", "reliable")
+func rpc_sync_powerups(powerups: Array[Dictionary]) -> void:
+	Game.set_spawned_powerups(powerups)
+
+
+@rpc("authority", "call_local", "reliable")
+func rpc_sync_powerup_effect(peer_id: int, effect_type: String, until_unix_ms: int) -> void:
+	if until_unix_ms <= 0:
+		Game.clear_powerup_effect(peer_id, effect_type)
+		return
+	Game.set_powerup_effect(peer_id, effect_type, until_unix_ms)
+
+
+@rpc("authority", "call_local", "reliable")
+func rpc_sync_powerup_teleport(peer_id: int, pos: Vector3, yaw: float) -> void:
+	powerup_teleport_received.emit(peer_id, pos)
 
 
 func _broadcast_lobby_state() -> void:
@@ -396,6 +469,43 @@ func _host_finish_match() -> void:
 	var results: Array[Dictionary] = Game.build_results_snapshot()
 	_last_synced_time_remaining = 0
 	rpc("rpc_sync_match_end", results)
+
+
+func _host_ensure_powerups() -> void:
+	if not is_host():
+		return
+	var current_powerups: Array[Dictionary] = Game.spawned_powerups.duplicate(true)
+	var used_positions: Array[String] = []
+	for powerup in current_powerups:
+		var pos: Vector3 = powerup.get("position", Vector3.ZERO)
+		used_positions.append(_powerup_position_key(pos))
+
+	var changed: bool = false
+	while current_powerups.size() < POWERUP_TARGET_COUNT:
+		var available_positions: Array[Vector3] = []
+		for spawn_pos in POWERUP_SPAWN_POINTS:
+			if used_positions.has(_powerup_position_key(spawn_pos)):
+				continue
+			available_positions.append(spawn_pos)
+		if available_positions.is_empty():
+			break
+		var spawn_pos: Vector3 = available_positions[randi() % available_positions.size()]
+		var powerup_type: String = _random_powerup_type()
+		current_powerups.append(
+			{
+				"powerup_id": _next_powerup_id,
+				"type": powerup_type,
+				"position": spawn_pos,
+			}
+		)
+		used_positions.append(_powerup_position_key(spawn_pos))
+		_next_powerup_id += 1
+		changed = true
+
+	if not changed:
+		return
+	Game.set_spawned_powerups(current_powerups)
+	rpc("rpc_sync_powerups", current_powerups)
 
 
 func _host_handle_catch_attempt(sender_id: int, target_peer_id: int, my_pos: Vector3) -> void:
@@ -453,6 +563,75 @@ func _host_handle_catch_attempt(sender_id: int, target_peer_id: int, my_pos: Vec
 		next_catchers,
 		freeze_until_unix_ms
 	)
+
+
+func _host_handle_powerup_collect(sender_id: int, powerup_id: int, my_pos: Vector3) -> void:
+	if not is_host():
+		return
+	if not Game.is_running:
+		return
+	if sender_id <= 0:
+		return
+	if not Game.players.has(sender_id):
+		return
+
+	var current_powerups: Array[Dictionary] = Game.spawned_powerups.duplicate(true)
+	var collected_powerup: Dictionary = {}
+	for powerup in current_powerups:
+		if int(powerup.get("powerup_id", -1)) != powerup_id:
+			continue
+		collected_powerup = powerup
+		break
+	if collected_powerup.is_empty():
+		return
+
+	var sender_pos: Vector3 = my_pos
+	if _host_player_positions.has(sender_id):
+		sender_pos = _host_player_positions[sender_id]
+	else:
+		_host_player_positions[sender_id] = my_pos
+
+	var powerup_pos: Vector3 = collected_powerup.get("position", Vector3.ZERO)
+	if sender_pos.distance_to(powerup_pos) > POWERUP_PICKUP_RADIUS_M:
+		return
+
+	var next_powerups: Array[Dictionary] = []
+	for powerup in current_powerups:
+		if int(powerup.get("powerup_id", -1)) == powerup_id:
+			continue
+		next_powerups.append(powerup)
+	Game.set_spawned_powerups(next_powerups)
+	rpc("rpc_sync_powerups", next_powerups)
+
+	var powerup_type: String = str(collected_powerup.get("type", ""))
+	var now_unix_ms: int = int(Time.get_unix_time_from_system() * 1000)
+	match powerup_type:
+		"invisible":
+			var invisible_until_unix_ms: int = now_unix_ms + POWERUP_INVISIBLE_DURATION_MS
+			Game.set_powerup_effect(sender_id, powerup_type, invisible_until_unix_ms)
+			rpc("rpc_sync_powerup_effect", sender_id, powerup_type, invisible_until_unix_ms)
+		"speed":
+			var speed_until_unix_ms: int = now_unix_ms + POWERUP_SPEED_DURATION_MS
+			Game.set_powerup_effect(sender_id, powerup_type, speed_until_unix_ms)
+			rpc("rpc_sync_powerup_effect", sender_id, powerup_type, speed_until_unix_ms)
+		"teleport":
+			var teleport_pos: Vector3 = _random_teleport_position()
+			_host_player_positions[sender_id] = teleport_pos
+			rpc("rpc_sync_powerup_teleport", sender_id, teleport_pos, 0.0)
+			rpc_sync_powerup_teleport(sender_id, teleport_pos, 0.0)
+
+
+func _random_powerup_type() -> String:
+	var powerup_types: PackedStringArray = ["invisible", "speed", "teleport"]
+	return powerup_types[randi() % powerup_types.size()]
+
+
+func _random_teleport_position() -> Vector3:
+	return POWERUP_TELEPORT_POINTS[randi() % POWERUP_TELEPORT_POINTS.size()]
+
+
+func _powerup_position_key(pos: Vector3) -> String:
+	return "%0.2f|%0.2f|%0.2f" % [pos.x, pos.y, pos.z]
 
 
 func _sanitize_character_id(raw_character_id: String) -> String:
