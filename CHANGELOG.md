@@ -1,3 +1,9 @@
+## [1.0.0-alpha.10](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.9...v1.0.0-alpha.10) (2026-03-03)
+
+### Features
+
+* implement character registry and refactor character selection logic ([f9bc22a](https://github.com/marcszy91/Huge-Buildup/commit/f9bc22a09adffa5eeaea3e51d32506e19f613901))
+
 ## [1.0.0-alpha.9](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.8...v1.0.0-alpha.9) (2026-03-03)
 
 ### Features
