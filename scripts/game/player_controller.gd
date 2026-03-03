@@ -3,6 +3,7 @@ extends CharacterBody3D
 const CharacterRegistryRef = preload("res://scripts/data/character_registry.gd")
 const RUN_SPEED: float = 8.7
 const GRAVITY: float = 20.0
+const JUMP_VELOCITY: float = 8.8
 const REMOTE_LERP_SPEED: float = 12.0
 const TURN_SPEED_RAD: float = 10.0
 const MOUSE_SENSITIVITY: float = 0.0024
@@ -15,6 +16,16 @@ const CAMERA_DISTANCE_LERP_SPEED: float = 16.0
 const DEFAULT_IDLE_ANIMATION_NAME: String = "Idle"
 const DEFAULT_WALK_ANIMATION_NAME: String = "Walk"
 const DEFAULT_RUN_ANIMATION_NAME: String = "Run"
+const JUMP_ANIMATION_CANDIDATES: PackedStringArray = [
+	"Jump",
+	"Jump_Full_Short",
+	"Jump_Idle",
+]
+const FALL_ANIMATION_CANDIDATES: PackedStringArray = [
+	"Fall",
+	"Fall_Idle",
+	"Jump_Loop",
+]
 const DEFAULT_CHARACTER_ID: String = CharacterRegistryRef.DEFAULT_CHARACTER_ID
 const COLOR_NEUTRAL: Color = Color(0.7, 0.72, 0.78, 1.0)
 const COLOR_CATCHER: Color = Color(0.93, 0.21, 0.22, 1.0)
@@ -112,7 +123,7 @@ func _process(delta: float) -> void:
 	var t: float = clampf(REMOTE_LERP_SPEED * delta, 0.0, 1.0)
 	global_position = global_position.lerp(_remote_target_position, t)
 	rotation.y = lerp_angle(rotation.y, _remote_target_yaw, t)
-	_update_character_animation(global_position.distance_to(_remote_target_position) > 0.05)
+	_update_character_animation(global_position.distance_to(_remote_target_position) > 0.05, false)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -142,7 +153,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if _is_frozen:
 		velocity = Vector3.ZERO
-		_update_character_animation(false)
+		_update_character_animation(false, false)
 		return
 
 	var input_vec: Vector2 = Input.get_vector(
@@ -169,14 +180,17 @@ func _physics_process(delta: float) -> void:
 	velocity.x = move_dir.x * RUN_SPEED
 	velocity.z = move_dir.z * RUN_SPEED
 
-	if not is_on_floor():
-		velocity.y -= GRAVITY * delta
+	if is_on_floor():
+		if Input.is_action_just_pressed("jump"):
+			velocity.y = JUMP_VELOCITY
+		else:
+			velocity.y = 0.0
 	else:
-		velocity.y = 0.0
+		velocity.y -= GRAVITY * delta
 
 	move_and_slide()
 	_update_camera_collision(delta)
-	_update_character_animation(move_dir.length_squared() > 0.0)
+	_update_character_animation(move_dir.length_squared() > 0.0, is_on_floor())
 
 
 func _apply_control_mode() -> void:
@@ -257,9 +271,14 @@ func _find_animation_player_recursive(root: Node) -> AnimationPlayer:
 	return null
 
 
-func _update_character_animation(is_moving: bool) -> void:
+func _update_character_animation(is_moving: bool, on_floor: bool) -> void:
 	if _character_animation_player == null:
 		return
+	if not on_floor:
+		if velocity.y > 0.2 and _play_first_available_character_animation(JUMP_ANIMATION_CANDIDATES):
+			return
+		if velocity.y < -0.2 and _play_first_available_character_animation(FALL_ANIMATION_CANDIDATES):
+			return
 	if not is_moving:
 		_play_character_animation(DEFAULT_IDLE_ANIMATION_NAME)
 		return
@@ -268,6 +287,14 @@ func _update_character_animation(is_moving: bool) -> void:
 		return
 	if _character_animation_player.has_animation(DEFAULT_WALK_ANIMATION_NAME):
 		_play_character_animation(DEFAULT_WALK_ANIMATION_NAME)
+
+
+func _play_first_available_character_animation(animation_names: PackedStringArray) -> bool:
+	for animation_name in animation_names:
+		if _character_animation_player.has_animation(animation_name):
+			_play_character_animation(animation_name)
+			return true
+	return false
 
 
 func _play_character_animation(animation_name: String) -> void:

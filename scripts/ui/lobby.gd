@@ -109,10 +109,13 @@ func _refresh_players() -> void:
 	for peer_id in ids:
 		var player: Dictionary = Game.players[peer_id]
 		var name: String = str(player.get("display_name", "Player"))
+		var character_name: String = CharacterRegistryRef.get_display_name(
+			str(player.get("character_id", CharacterRegistryRef.get_default_id()))
+		)
 		var ready_text: String = "not ready"
 		if bool(player.get("is_ready", false)):
 			ready_text = "ready"
-		_players_list.add_item("%s (%d) - %s" % [name, peer_id, ready_text])
+		_players_list.add_item("%s (%d) - %s - %s" % [name, peer_id, character_name, ready_text])
 
 	var my_id: int = Net.my_peer_id()
 	if Game.players.has(my_id):
