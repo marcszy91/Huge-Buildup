@@ -3,10 +3,11 @@ extends Node
 signal settings_changed
 
 const SETTINGS_PATH: String = "user://settings.cfg"
+const CharacterRegistryRef = preload("res://scripts/data/character_registry.gd")
 
 var display_name: String = "Player"
 var mouse_sensitivity: float = 0.25
-var character_id: String = "chef_female"
+var character_id: String = CharacterRegistryRef.get_default_id()
 
 
 func _ready() -> void:
@@ -56,11 +57,4 @@ func set_character_id(next_character_id: String) -> void:
 
 
 func _sanitize_character_id(raw_character_id: String) -> String:
-	var clean_id: String = raw_character_id.strip_edges().to_lower()
-	if clean_id.is_empty():
-		return "chef_female"
-	match clean_id:
-		"chef_female", "casual_male":
-			return clean_id
-		_:
-			return "chef_female"
+	return CharacterRegistryRef.sanitize_id(raw_character_id)

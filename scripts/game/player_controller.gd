@@ -1,5 +1,6 @@
 extends CharacterBody3D
 
+const CharacterRegistryRef = preload("res://scripts/data/character_registry.gd")
 const RUN_SPEED: float = 8.7
 const GRAVITY: float = 20.0
 const REMOTE_LERP_SPEED: float = 12.0
@@ -14,7 +15,7 @@ const CAMERA_DISTANCE_LERP_SPEED: float = 16.0
 const DEFAULT_IDLE_ANIMATION_NAME: String = "Idle"
 const DEFAULT_WALK_ANIMATION_NAME: String = "Walk"
 const DEFAULT_RUN_ANIMATION_NAME: String = "Run"
-const DEFAULT_CHARACTER_ID: String = "chef_female"
+const DEFAULT_CHARACTER_ID: String = CharacterRegistryRef.DEFAULT_CHARACTER_ID
 const COLOR_NEUTRAL: Color = Color(0.7, 0.72, 0.78, 1.0)
 const COLOR_CATCHER: Color = Color(0.93, 0.21, 0.22, 1.0)
 const COLOR_SELF: Color = Color(0.2, 0.82, 0.42, 1.0)
@@ -35,6 +36,7 @@ var _current_character_animation_name: String = ""
 var _character_id: String = DEFAULT_CHARACTER_ID
 var _camera_default_local_position: Vector3 = Vector3.ZERO
 var _camera_target_distance: float = 0.0
+var _active_character_instance: Node3D
 
 
 func _ready() -> void:
@@ -287,39 +289,24 @@ func _play_character_animation(animation_name: String) -> void:
 func _apply_character_visual() -> void:
 	if _character_visual == null:
 		return
-	for child in _character_visual.get_children():
-		if not (child is Node3D):
-			continue
-		var child_node: Node3D = child as Node3D
-		var should_show: bool = child_node.name.to_lower() == _node_name_for_character_id(_character_id)
-		child_node.visible = should_show
+	if _active_character_instance != null:
+		_active_character_instance.queue_free()
+		_active_character_instance = null
+
+	var scene: PackedScene = CharacterRegistryRef.load_scene(_character_id)
+	if scene == null:
+		return
+	var instance: Node = scene.instantiate()
+	if not (instance is Node3D):
+		instance.queue_free()
+		return
+	_active_character_instance = instance as Node3D
+	_character_visual.add_child(_active_character_instance)
 
 
 func _get_active_character_root() -> Node:
-	if _character_visual == null:
-		return null
-	var target_name: String = _node_name_for_character_id(_character_id)
-	for child in _character_visual.get_children():
-		if (child is Node3D) and (child as Node3D).name.to_lower() == target_name:
-			return child
-	for child in _character_visual.get_children():
-		if child is Node3D:
-			return child
-	return null
+	return _active_character_instance
 
 
 func _sanitize_character_id(raw_character_id: String) -> String:
-	var clean_id: String = raw_character_id.strip_edges().to_lower()
-	match clean_id:
-		"chef_female", "casual_male":
-			return clean_id
-		_:
-			return DEFAULT_CHARACTER_ID
-
-
-func _node_name_for_character_id(character_id: String) -> String:
-	match character_id:
-		"casual_male":
-			return "casualmale"
-		_:
-			return "cheffemale"
+	return CharacterRegistryRef.sanitize_id(raw_character_id)

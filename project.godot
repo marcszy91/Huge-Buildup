@@ -15,11 +15,11 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Huge Buildup"
+config/version="1.0.0-alpha.8"
 run/main_scene="res://scenes/MainMenu.tscn"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
 
-config/version="1.0.0-alpha.8"
 [autoload]
 
 App="*res://scripts/autoload/app.gd"
@@ -33,10 +33,6 @@ window/size/viewport_width=1600
 window/size/viewport_height=900
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
-
-[rendering]
-
-textures/vram_compression/import_etc2_astc=true
 
 [input]
 
@@ -65,3 +61,7 @@ toggle_fullscreen={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":4194342,"physical_keycode":0,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true

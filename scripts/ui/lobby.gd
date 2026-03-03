@@ -2,17 +2,9 @@ extends Control
 
 const PREVIEW_IDLE_ANIMATION_NAME: String = "Idle"
 const PREVIEW_BACKGROUND_COLOR: Color = Color(0.06, 0.07, 0.09, 1.0)
-const CHARACTER_CHEF_SCENE: PackedScene = preload(
-	"res://assets/quaternius/ultimate_animated_characters/glTF/Chef_Female.gltf"
-)
-const CHARACTER_CASUAL_SCENE: PackedScene = preload(
-	"res://assets/quaternius/ultimate_animated_characters/glTF/Casual_Male.gltf"
-)
+const CharacterRegistryRef = preload("res://scripts/data/character_registry.gd")
 
-var _character_options: Array[Dictionary] = [
-	{"id": "chef_female", "name": "Chef Female"},
-	{"id": "casual_male", "name": "Casual Male"},
-]
+var _character_options: Array[Dictionary] = []
 var _local_ready: bool = false
 var _preview_character_instance: Node
 var _preview_pivot: Node3D
@@ -48,6 +40,7 @@ func _ready() -> void:
 	Net.peer_connected.connect(_on_peer_connected)
 	Net.peer_disconnected.connect(_on_peer_disconnected)
 	Settings.settings_changed.connect(_refresh_character_preview)
+	_character_options = CharacterRegistryRef.get_entries()
 
 	_setup_character_preview_viewport()
 	_refresh_session(Net.connection_state)
@@ -188,7 +181,9 @@ func _cycle_character_selection(direction: int) -> void:
 		return
 	var current_index: int = _get_character_index_by_id(Settings.character_id)
 	var next_index: int = posmod(current_index + direction, _character_options.size())
-	var next_character_id: String = str(_character_options[next_index].get("id", "chef_female"))
+	var next_character_id: String = str(
+		_character_options[next_index].get("id", CharacterRegistryRef.get_default_id())
+	)
 	Settings.set_character_id(next_character_id)
 	if Net.has_multiplayer_peer():
 		Net.request_set_character(next_character_id)
@@ -201,7 +196,7 @@ func _refresh_character_preview() -> void:
 	var current_index: int = _get_character_index_by_id(Settings.character_id)
 	var entry: Dictionary = _character_options[current_index]
 	_character_name_label.text = str(entry.get("name", "Character"))
-	_spawn_preview_character(str(entry.get("id", "chef_female")))
+	_spawn_preview_character(str(entry.get("id", CharacterRegistryRef.get_default_id())))
 
 
 func _get_character_index_by_id(character_id: String) -> int:
@@ -267,11 +262,8 @@ func _spawn_preview_character(character_id: String) -> void:
 
 
 func _get_character_scene(character_id: String) -> PackedScene:
-	match character_id:
-		"casual_male":
-			return CHARACTER_CASUAL_SCENE
-		_:
-			return CHARACTER_CHEF_SCENE
+	return CharacterRegistryRef.load_scene(character_id)
+	
 
 
 func _play_preview_idle(root: Node) -> void:

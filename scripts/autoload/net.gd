@@ -18,6 +18,7 @@ enum ConnectionState {
 const DEFAULT_PORT: int = 24567
 const DEFAULT_MAX_PLAYERS: int = 16
 const NEW_CATCHER_FREEZE_MS: int = 3000
+const CharacterRegistryRef = preload("res://scripts/data/character_registry.gd")
 
 var connection_state: int = ConnectionState.DISCONNECTED
 var _next_join_index: int = 1
@@ -367,17 +368,18 @@ func _host_start_match() -> void:
 	if players_snapshot.is_empty():
 		_emit_error("Cannot start match without players.")
 		return
-	if players_snapshot.size() < 2:
-		_emit_error("Need at least 2 players (at least 1 catcher and 1 runner).")
-		return
 
 	Game.rebalance_catchers()
 	var catcher_ids: Array[int] = Game.get_catcher_peer_ids()
-	if catcher_ids.is_empty():
+	if players_snapshot.size() <= 1:
+		catcher_ids = []
+	elif catcher_ids.is_empty():
 		_emit_error("No catchers assigned.")
 		return
 
-	var initial_it_peer_id: int = int(catcher_ids[0])
+	var initial_it_peer_id: int = 0
+	if not catcher_ids.is_empty():
+		initial_it_peer_id = int(catcher_ids[0])
 	var seed: int = randi()
 	var config: Dictionary = Game.make_config_snapshot()
 
@@ -454,11 +456,4 @@ func _host_handle_catch_attempt(sender_id: int, target_peer_id: int, my_pos: Vec
 
 
 func _sanitize_character_id(raw_character_id: String) -> String:
-	var clean_id: String = raw_character_id.strip_edges().to_lower()
-	if clean_id.is_empty():
-		return "chef_female"
-	match clean_id:
-		"chef_female", "casual_male":
-			return clean_id
-		_:
-			return "chef_female"
+	return CharacterRegistryRef.sanitize_id(raw_character_id)
