@@ -1,3 +1,9 @@
+## [1.0.0-alpha.9](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.8...v1.0.0-alpha.9) (2026-03-03)
+
+### Features
+
+* add initial HTML structure and styles for the documentation pages ([0f96dbe](https://github.com/marcszy91/Huge-Buildup/commit/0f96dbeffe0b5aa1b21e6558d3543eb7d494fcc6))
+
 ## [1.0.0-alpha.8](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.7...v1.0.0-alpha.8) (2026-03-03)
 
 ### Features
