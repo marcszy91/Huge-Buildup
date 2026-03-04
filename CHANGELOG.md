@@ -1,3 +1,9 @@
+## [1.0.0-alpha.12](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.11...v1.0.0-alpha.12) (2026-03-04)
+
+### Features
+
+* add powerup SVG assets and implement powerup effect handling in HUD ([acc7030](https://github.com/marcszy91/Huge-Buildup/commit/acc70302fbd5f2c1d734d0f1ac399314d25ce49b))
+
 ## [1.0.0-alpha.11](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.10...v1.0.0-alpha.11) (2026-03-03)
 
 ### Features
