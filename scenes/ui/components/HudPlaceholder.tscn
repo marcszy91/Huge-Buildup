@@ -36,3 +36,11 @@ offset_top = 90.0
 offset_right = 280.0
 offset_bottom = 118.0
 text = "Caught: 0"
+
+[node name="EffectsLabel" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 116.0
+offset_right = 520.0
+offset_bottom = 144.0
+text = "Effects: -"

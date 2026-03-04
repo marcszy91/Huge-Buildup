@@ -2,7 +2,7 @@ extends CharacterBody3D
 
 const CharacterRegistryRef = preload("res://scripts/data/character_registry.gd")
 const RUN_SPEED: float = 8.7
-const SPEED_BOOST_MULTIPLIER: float = 1.35
+const SPEED_BOOST_MULTIPLIER: float = 1.55
 const GRAVITY: float = 20.0
 const JUMP_VELOCITY: float = 8.8
 const REMOTE_LERP_SPEED: float = 12.0
@@ -58,6 +58,8 @@ func _ready() -> void:
 			(_mesh.material_override as StandardMaterial3D).duplicate() as StandardMaterial3D
 		)
 		_mesh.material_override = material
+	if _mesh != null:
+		_mesh.visible = false
 	_remote_target_position = global_position
 	_remote_target_yaw = rotation.y
 	if _camera_yaw != null:
@@ -128,8 +130,6 @@ func set_invisible_state(is_hidden_from_viewer: bool) -> void:
 	_is_hidden_from_viewer = is_hidden_from_viewer
 	if _character_visual != null:
 		_character_visual.visible = not _is_hidden_from_viewer
-	if _mesh != null:
-		_mesh.visible = not _is_hidden_from_viewer
 
 
 func _process(delta: float) -> void:

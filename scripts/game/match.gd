@@ -7,9 +7,12 @@ const POWERUP_COLLECT_COOLDOWN_S: float = 0.15
 const SPAWN_ROW_WIDTH: int = 4
 const SPAWN_SPACING: float = 4.0
 const POWERUP_Y_ROTATION_SPEED: float = 2.2
+const POWERUP_BOB_HEIGHT: float = 0.12
+const POWERUP_BOB_SPEED: float = 2.6
 
 var _spawned_players: Dictionary[int, CharacterBody3D] = {}
 var _powerup_nodes: Dictionary[int, Node3D] = {}
+var _powerup_textures: Dictionary[String, Texture2D] = {}
 var _local_peer_id: int = 0
 var _tx_accum_s: float = 0.0
 var _catch_attempt_cooldown_s: float = 0.0
@@ -27,6 +30,7 @@ func _ready() -> void:
 	Game.catchers_changed.connect(_refresh_role_visuals)
 	Game.powerups_changed.connect(_refresh_powerup_nodes)
 	Game.powerup_effect_changed.connect(_on_powerup_effect_changed)
+	_build_powerup_textures()
 	_refresh_powerup_nodes()
 	_refresh_role_visuals()
 
@@ -252,31 +256,151 @@ func _refresh_powerup_nodes() -> void:
 func _update_powerup_visuals(delta: float) -> void:
 	for powerup_node in _powerup_nodes.values():
 		powerup_node.rotate_y(POWERUP_Y_ROTATION_SPEED * delta)
+		var base_y: float = float(powerup_node.get_meta("base_y", powerup_node.position.y))
+		var bob_phase: float = float(powerup_node.get_meta("bob_phase", 0.0))
+		powerup_node.position.y = base_y + sin(Time.get_ticks_msec() / 1000.0 * POWERUP_BOB_SPEED + bob_phase) * POWERUP_BOB_HEIGHT
 
 
 func _create_powerup_node(powerup_type: String) -> Node3D:
 	var root: Node3D = Node3D.new()
 	root.name = "Powerup_%s" % powerup_type
-	var mesh_instance: MeshInstance3D = MeshInstance3D.new()
-	var material: StandardMaterial3D = StandardMaterial3D.new()
-	match powerup_type:
-		"invisible":
-			mesh_instance.mesh = SphereMesh.new()
-			material.albedo_color = Color(0.45, 0.85, 1.0, 0.9)
-		"speed":
-			mesh_instance.mesh = CapsuleMesh.new()
-			material.albedo_color = Color(1.0, 0.8, 0.2, 1.0)
-		_:
-			mesh_instance.mesh = BoxMesh.new()
-			material.albedo_color = Color(0.8, 0.35, 1.0, 1.0)
-	mesh_instance.position.y = 0.6
-	mesh_instance.scale = Vector3.ONE * 0.6
-	material.emission_enabled = true
-	material.emission = material.albedo_color
-	material.emission_energy_multiplier = 0.75
-	mesh_instance.material_override = material
-	root.add_child(mesh_instance)
+	root.position.y = 0.18
+	root.set_meta("base_y", root.position.y)
+	root.set_meta("bob_phase", randf() * TAU)
+	var sprite: Sprite3D = Sprite3D.new()
+	sprite.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	sprite.pixel_size = 0.0085
+	sprite.texture = _powerup_textures.get(powerup_type, _powerup_textures.get("teleport"))
+	sprite.position.y = 1.05
+	root.add_child(sprite)
 	return root
+
+
+func _build_powerup_textures() -> void:
+	_powerup_textures = {
+		"invisible": _make_invisible_powerup_texture(),
+		"speed": _make_speed_powerup_texture(),
+		"teleport": _make_teleport_powerup_texture(),
+	}
+
+
+func _make_invisible_powerup_texture() -> Texture2D:
+	var image: Image = Image.create(128, 128, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0.06, 0.09, 0.16, 0.0))
+	_draw_rounded_rect(image, Rect2i(8, 8, 112, 112), 18, Color(0.06, 0.09, 0.16, 0.95))
+	_draw_ring(image, Vector2i(64, 64), 34, 6, Color(0.40, 0.92, 0.98, 1.0))
+	_draw_filled_circle(image, Vector2i(64, 64), 8, Color(0.40, 0.92, 0.98, 1.0))
+	_draw_line(image, Vector2i(28, 96), Vector2i(100, 32), 5, Color(0.93, 0.96, 1.0, 1.0))
+	return ImageTexture.create_from_image(image)
+
+
+func _make_speed_powerup_texture() -> Texture2D:
+	var image: Image = Image.create(128, 128, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0.12, 0.16, 0.22, 0.0))
+	_draw_rounded_rect(image, Rect2i(8, 8, 112, 112), 18, Color(0.12, 0.16, 0.22, 0.95))
+	var bolt: PackedVector2Array = PackedVector2Array(
+		[
+			Vector2(74, 18),
+			Vector2(40, 68),
+			Vector2(60, 68),
+			Vector2(50, 110),
+			Vector2(92, 54),
+			Vector2(68, 54),
+		]
+	)
+	_fill_polygon(image, bolt, Color(1.0, 0.78, 0.16, 1.0))
+	_draw_line(image, Vector2i(18, 48), Vector2i(42, 48), 5, Color(1.0, 0.92, 0.60, 1.0))
+	_draw_line(image, Vector2i(14, 66), Vector2i(34, 66), 5, Color(1.0, 0.92, 0.60, 1.0))
+	_draw_line(image, Vector2i(86, 88), Vector2i(110, 88), 5, Color(1.0, 0.92, 0.60, 1.0))
+	return ImageTexture.create_from_image(image)
+
+
+func _make_teleport_powerup_texture() -> Texture2D:
+	var image: Image = Image.create(128, 128, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0.12, 0.10, 0.30, 0.0))
+	_draw_rounded_rect(image, Rect2i(8, 8, 112, 112), 18, Color(0.12, 0.10, 0.30, 0.95))
+	_draw_ring(image, Vector2i(64, 64), 32, 6, Color(0.78, 0.55, 0.98, 1.0))
+	_draw_ring(image, Vector2i(64, 64), 16, 6, Color(0.92, 0.84, 1.0, 1.0))
+	_draw_line(image, Vector2i(64, 18), Vector2i(64, 8), 5, Color(0.78, 0.55, 0.98, 1.0))
+	_draw_line(image, Vector2i(64, 120), Vector2i(64, 110), 5, Color(0.78, 0.55, 0.98, 1.0))
+	_draw_line(image, Vector2i(18, 64), Vector2i(8, 64), 5, Color(0.78, 0.55, 0.98, 1.0))
+	_draw_line(image, Vector2i(120, 64), Vector2i(110, 64), 5, Color(0.78, 0.55, 0.98, 1.0))
+	return ImageTexture.create_from_image(image)
+
+
+func _draw_rounded_rect(image: Image, rect: Rect2i, radius: int, color: Color) -> void:
+	for y in range(rect.position.y, rect.end.y):
+		for x in range(rect.position.x, rect.end.x):
+			var dx: int = mini(x - rect.position.x, rect.end.x - 1 - x)
+			var dy: int = mini(y - rect.position.y, rect.end.y - 1 - y)
+			if dx >= radius or dy >= radius:
+				image.set_pixel(x, y, color)
+				continue
+			var corner_dx: int = radius - dx
+			var corner_dy: int = radius - dy
+			if corner_dx * corner_dx + corner_dy * corner_dy <= radius * radius:
+				image.set_pixel(x, y, color)
+
+
+func _draw_filled_circle(image: Image, center: Vector2i, radius: int, color: Color) -> void:
+	for y in range(center.y - radius, center.y + radius + 1):
+		for x in range(center.x - radius, center.x + radius + 1):
+			if x < 0 or y < 0 or x >= image.get_width() or y >= image.get_height():
+				continue
+			var dx: int = x - center.x
+			var dy: int = y - center.y
+			if dx * dx + dy * dy <= radius * radius:
+				image.set_pixel(x, y, color)
+
+
+func _draw_ring(image: Image, center: Vector2i, radius: int, thickness: int, color: Color) -> void:
+	var inner_radius: int = max(0, radius - thickness)
+	var outer_sq: int = radius * radius
+	var inner_sq: int = inner_radius * inner_radius
+	for y in range(center.y - radius, center.y + radius + 1):
+		for x in range(center.x - radius, center.x + radius + 1):
+			if x < 0 or y < 0 or x >= image.get_width() or y >= image.get_height():
+				continue
+			var dx: int = x - center.x
+			var dy: int = y - center.y
+			var dist_sq: int = dx * dx + dy * dy
+			if dist_sq <= outer_sq and dist_sq >= inner_sq:
+				image.set_pixel(x, y, color)
+
+
+func _draw_line(
+	image: Image, start: Vector2i, end: Vector2i, thickness: int, color: Color
+) -> void:
+	var from: Vector2 = Vector2(start)
+	var to: Vector2 = Vector2(end)
+	var delta: Vector2 = to - from
+	var steps: int = int(max(abs(delta.x), abs(delta.y)))
+	if steps <= 0:
+		_draw_filled_circle(image, start, max(1, thickness / 2), color)
+		return
+	for i in range(steps + 1):
+		var t: float = float(i) / float(steps)
+		var point: Vector2 = from.lerp(to, t)
+		_draw_filled_circle(image, Vector2i(roundi(point.x), roundi(point.y)), max(1, thickness / 2), color)
+
+
+func _fill_polygon(image: Image, points: PackedVector2Array, color: Color) -> void:
+	if points.size() < 3:
+		return
+	var min_x: int = maxi(0, floori(points[0].x))
+	var max_x: int = mini(image.get_width() - 1, ceili(points[0].x))
+	var min_y: int = maxi(0, floori(points[0].y))
+	var max_y: int = mini(image.get_height() - 1, ceili(points[0].y))
+	for point in points:
+		min_x = maxi(0, mini(min_x, floori(point.x)))
+		max_x = mini(image.get_width() - 1, maxi(max_x, ceili(point.x)))
+		min_y = maxi(0, mini(min_y, floori(point.y)))
+		max_y = mini(image.get_height() - 1, maxi(max_y, ceili(point.y)))
+
+	for y in range(min_y, max_y + 1):
+		for x in range(min_x, max_x + 1):
+			if Geometry2D.is_point_in_polygon(Vector2(x, y), points):
+				image.set_pixel(x, y, color)
 
 
 func _spawn_position_for_index(i: int) -> Vector3:

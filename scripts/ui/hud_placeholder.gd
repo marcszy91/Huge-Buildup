@@ -4,6 +4,7 @@ extends CanvasLayer
 @onready var _role_label: Label = %RoleLabel
 @onready var _timer_label: Label = %TimerLabel
 @onready var _score_label: Label = %ScoreLabel
+@onready var _effects_label: Label = %EffectsLabel
 
 
 func _ready() -> void:
@@ -12,9 +13,11 @@ func _ready() -> void:
 	Game.match_state_changed.connect(_refresh_role)
 	Game.timer_changed.connect(_on_timer_changed)
 	Game.score_changed.connect(_refresh_score)
+	Game.powerup_effect_changed.connect(_on_powerup_effect_changed)
 	_refresh_role()
 	_refresh_timer()
 	_refresh_score()
+	_refresh_effects()
 
 
 func _exit_tree() -> void:
@@ -28,6 +31,8 @@ func _exit_tree() -> void:
 		Game.timer_changed.disconnect(_on_timer_changed)
 	if Game.score_changed.is_connected(_refresh_score):
 		Game.score_changed.disconnect(_refresh_score)
+	if Game.powerup_effect_changed.is_connected(_on_powerup_effect_changed):
+		Game.powerup_effect_changed.disconnect(_on_powerup_effect_changed)
 
 
 func _process(_delta: float) -> void:
@@ -40,6 +45,7 @@ func _process(_delta: float) -> void:
 		_refresh_role()
 	if Game.is_running:
 		_refresh_timer()
+		_refresh_effects()
 
 
 func _refresh_role() -> void:
@@ -73,6 +79,28 @@ func _refresh_score() -> void:
 	_score_label.text = "Caught: %d" % Game.get_times_caught(my_peer_id)
 
 
+func _refresh_effects() -> void:
+	var my_peer_id: int = Net.my_peer_id()
+	if my_peer_id <= 0 or not Game.is_running:
+		_effects_label.text = "Effects: -"
+		return
+
+	var effect_lines: PackedStringArray = []
+	var invisible_remaining_ms: int = Game.get_powerup_effect_remaining_ms(my_peer_id, "invisible")
+	if invisible_remaining_ms > 0:
+		effect_lines.append("Invisible %.1fs" % (ceilf(float(invisible_remaining_ms) / 100.0) / 10.0))
+
+	var speed_remaining_ms: int = Game.get_powerup_effect_remaining_ms(my_peer_id, "speed")
+	if speed_remaining_ms > 0:
+		effect_lines.append("Speed %.1fs" % (ceilf(float(speed_remaining_ms) / 100.0) / 10.0))
+
+	if effect_lines.is_empty():
+		_effects_label.text = "Effects: -"
+		return
+
+	_effects_label.text = "Effects: %s" % " | ".join(effect_lines)
+
+
 func _on_freeze_state_changed(peer_id: int) -> void:
 	if peer_id == Net.my_peer_id():
 		_refresh_role()
@@ -80,3 +108,9 @@ func _on_freeze_state_changed(peer_id: int) -> void:
 
 func _on_timer_changed(_time_remaining_s: int) -> void:
 	_refresh_timer()
+
+
+func _on_powerup_effect_changed(peer_id: int) -> void:
+	if peer_id != Net.my_peer_id():
+		return
+	_refresh_effects()
