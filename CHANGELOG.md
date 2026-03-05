@@ -1,3 +1,9 @@
+## [1.0.0-alpha.13](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.12...v1.0.0-alpha.13) (2026-03-04)
+
+### Features
+
+* add splash screen scene and implement splash logic with animations ([2fd6940](https://github.com/marcszy91/Huge-Buildup/commit/2fd69408b7d1066a65a1272d461e02d710995a48))
+
 ## [1.0.0-alpha.12](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.11...v1.0.0-alpha.12) (2026-03-04)
 
 ### Features
