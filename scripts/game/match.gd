@@ -11,7 +11,10 @@ const POWERUP_BOB_HEIGHT: float = 0.12
 const POWERUP_BOB_SPEED: float = 2.6
 const NAMETAG_DEFAULT_COLOR: Color = Color(1.0, 1.0, 1.0, 1.0)
 const NAMETAG_CATCHER_COLOR: Color = Color(0.95, 0.24, 0.24, 1.0)
-const NAMETAG_HEIGHT_M: float = 2.15
+const NAMETAG_FALLBACK_HEIGHT_M: float = 2.35
+const NAMETAG_HEADROOM_M: float = 0.16
+const NAMETAG_MIN_HEIGHT_M: float = 2.15
+const NAMETAG_MAX_HEIGHT_M: float = 3.20
 
 var _spawned_players: Dictionary[int, CharacterBody3D] = {}
 var _player_display_names: Dictionary[int, String] = {}
@@ -465,7 +468,7 @@ func _attach_name_label(peer_id: int, player: CharacterBody3D) -> void:
 		return
 	var label: Label3D = Label3D.new()
 	label.name = "NameLabel"
-	label.position = Vector3(0.0, NAMETAG_HEIGHT_M, 0.0)
+	label.position = Vector3(0.0, _compute_name_label_height(player), 0.0)
 	label.text = _player_display_names.get(peer_id, "Player")
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.no_depth_test = false
@@ -477,6 +480,58 @@ func _attach_name_label(peer_id: int, player: CharacterBody3D) -> void:
 	label.uppercase = false
 	player.add_child(label)
 	_player_name_labels[peer_id] = label
+
+
+func _compute_name_label_height(player: CharacterBody3D) -> float:
+	var mesh_instances: Array[MeshInstance3D] = []
+	_collect_mesh_instances(player, mesh_instances)
+	var player_to_local: Transform3D = player.global_transform.affine_inverse()
+	var max_top_y: float = -INF
+	for mesh_instance in mesh_instances:
+		var aabb: AABB = mesh_instance.get_aabb()
+		if aabb.size.length_squared() <= 0.000001:
+			continue
+		var mesh_to_player_local: Transform3D = player_to_local * mesh_instance.global_transform
+		var top_y: float = _get_aabb_top_y(aabb, mesh_to_player_local)
+		if top_y > max_top_y:
+			max_top_y = top_y
+	if not is_finite(max_top_y):
+		return NAMETAG_FALLBACK_HEIGHT_M
+	var desired_height: float = max_top_y + NAMETAG_HEADROOM_M
+	return clampf(desired_height, NAMETAG_MIN_HEIGHT_M, NAMETAG_MAX_HEIGHT_M)
+
+
+func _collect_mesh_instances(root: Node, out_meshes: Array[MeshInstance3D]) -> void:
+	if root is MeshInstance3D:
+		out_meshes.append(root as MeshInstance3D)
+	for child in root.get_children():
+		_collect_mesh_instances(child, out_meshes)
+
+
+func _get_aabb_top_y(aabb: AABB, transform_local: Transform3D) -> float:
+	var max_y: float = -INF
+	for corner in _get_aabb_corners(aabb):
+		var transformed: Vector3 = transform_local * corner
+		if transformed.y > max_y:
+			max_y = transformed.y
+	return max_y
+
+
+func _get_aabb_corners(aabb: AABB) -> PackedVector3Array:
+	var min_corner: Vector3 = aabb.position
+	var max_corner: Vector3 = aabb.position + aabb.size
+	return PackedVector3Array(
+		[
+			Vector3(min_corner.x, min_corner.y, min_corner.z),
+			Vector3(min_corner.x, min_corner.y, max_corner.z),
+			Vector3(min_corner.x, max_corner.y, min_corner.z),
+			Vector3(min_corner.x, max_corner.y, max_corner.z),
+			Vector3(max_corner.x, min_corner.y, min_corner.z),
+			Vector3(max_corner.x, min_corner.y, max_corner.z),
+			Vector3(max_corner.x, max_corner.y, min_corner.z),
+			Vector3(max_corner.x, max_corner.y, max_corner.z),
+		]
+	)
 
 
 func _refresh_name_label_color(peer_id: int, local_is_catcher: bool) -> void:
