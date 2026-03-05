@@ -11,6 +11,7 @@ var character_id: String = CharacterRegistryRef.get_default_id()
 
 
 func _ready() -> void:
+	display_name = _get_default_display_name()
 	load_settings()
 
 
@@ -39,7 +40,7 @@ func save_settings() -> void:
 func set_display_name(next_name: String) -> void:
 	display_name = next_name.strip_edges()
 	if display_name.is_empty():
-		display_name = "Player"
+		display_name = _get_default_display_name()
 	save_settings()
 	settings_changed.emit()
 
@@ -58,3 +59,12 @@ func set_character_id(next_character_id: String) -> void:
 
 func _sanitize_character_id(raw_character_id: String) -> String:
 	return CharacterRegistryRef.sanitize_id(raw_character_id)
+
+
+func _get_default_display_name() -> String:
+	var os_user: String = OS.get_environment("USERNAME").strip_edges()
+	if os_user.is_empty():
+		os_user = OS.get_environment("USER").strip_edges()
+	if os_user.is_empty():
+		return "Player"
+	return os_user

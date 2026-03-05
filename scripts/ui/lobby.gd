@@ -11,6 +11,7 @@ var _preview_pivot: Node3D
 
 @onready var _session_label: Label = $CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/SessionLabel
 @onready var _players_list: ItemList = $CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/PlayersList
+@onready var _catcher_config_label: Label = $CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CatcherConfigLabel
 @onready var _catcher_count_spin_box: SpinBox = $CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CatcherCountSpinBox
 @onready var _distribution_label: Label = $CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/DistributionLabel
 @onready var _character_name_label: Label = $CenterContainer/PanelContainer/MarginContainer/ScrollContainer/VBox/CharacterNameLabel
@@ -73,14 +74,15 @@ func _on_ready_pressed() -> void:
 
 
 func _refresh_session(_state: int) -> void:
-	if Net.is_host():
-		_session_label.text = "Lobby: Host (%d)" % Net.my_peer_id()
-		_start_match_button.disabled = false
-		_catcher_count_spin_box.editable = true
-	else:
-		_session_label.text = "Lobby: Client (%d)" % Net.my_peer_id()
-		_start_match_button.disabled = true
-		_catcher_count_spin_box.editable = false
+	var is_host: bool = Net.is_host()
+	_session_label.visible = false
+	_session_label.text = ""
+	_start_match_button.visible = is_host
+	_start_match_button.disabled = not is_host
+	_catcher_config_label.visible = is_host
+	_catcher_count_spin_box.visible = is_host
+	_distribution_label.visible = is_host
+	_catcher_count_spin_box.editable = is_host
 
 
 func _refresh_lobby_config() -> void:
@@ -130,12 +132,12 @@ func _refresh_players() -> void:
 	_refresh_character_preview()
 
 
-func _on_peer_connected(peer_id: int) -> void:
-	_note_label.text = "Peer connected: %d" % peer_id
+func _on_peer_connected(_peer_id: int) -> void:
+	_note_label.text = ""
 
 
-func _on_peer_disconnected(peer_id: int) -> void:
-	_note_label.text = "Peer disconnected: %d" % peer_id
+func _on_peer_disconnected(_peer_id: int) -> void:
+	_note_label.text = ""
 
 
 func _refresh_ready_button() -> void:
