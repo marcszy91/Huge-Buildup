@@ -268,6 +268,8 @@ func _refresh_player_effect_visuals() -> void:
 		)
 		if player.has_method("set_invisible_state"):
 			player.call("set_invisible_state", is_hidden_from_local_view)
+		if _player_name_labels.has(peer_id):
+			_player_name_labels[peer_id].visible = not is_hidden_from_local_view
 
 
 func _refresh_powerup_nodes() -> void:
