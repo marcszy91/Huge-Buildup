@@ -1,3 +1,10 @@
+## [1.0.0-alpha.14](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.13...v1.0.0-alpha.14) (2026-03-05)
+
+### Features
+
+* add custom icon for application and console wrapper ([bfca64d](https://github.com/marcszy91/Huge-Buildup/commit/bfca64d95b5bf4920e3a281baef31d6e00fc1b4a))
+* enhance player control and camera management with mouse capture functionality ([0f6651d](https://github.com/marcszy91/Huge-Buildup/commit/0f6651debc2c739f6364450fd04fcbf1ac38ca4e))
+
 ## [1.0.0-alpha.13](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.12...v1.0.0-alpha.13) (2026-03-04)
 
 ### Features
