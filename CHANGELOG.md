@@ -1,3 +1,10 @@
+## [1.0.0-alpha.15](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.14...v1.0.0-alpha.15) (2026-03-05)
+
+### Features
+
+* add visibility toggle for player name labels based on hidden state ([f578bfd](https://github.com/marcszy91/Huge-Buildup/commit/f578bfda8cf138cfd57360da7dc3d55651537413))
+* update UI elements in MainMenu and Lobby scenes for improved player interaction and visibility ([94586d0](https://github.com/marcszy91/Huge-Buildup/commit/94586d00bbc4fa0fea9bfb8239f4223e21574e45))
+
 ## [1.0.0-alpha.14](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.13...v1.0.0-alpha.14) (2026-03-05)
 
 ### Features
