@@ -9,8 +9,13 @@ const SPAWN_SPACING: float = 4.0
 const POWERUP_Y_ROTATION_SPEED: float = 2.2
 const POWERUP_BOB_HEIGHT: float = 0.12
 const POWERUP_BOB_SPEED: float = 2.6
+const NAMETAG_DEFAULT_COLOR: Color = Color(1.0, 1.0, 1.0, 1.0)
+const NAMETAG_CATCHER_COLOR: Color = Color(0.95, 0.24, 0.24, 1.0)
+const NAMETAG_HEIGHT_M: float = 2.15
 
 var _spawned_players: Dictionary[int, CharacterBody3D] = {}
+var _player_display_names: Dictionary[int, String] = {}
+var _player_name_labels: Dictionary[int, Label3D] = {}
 var _powerup_nodes: Dictionary[int, Node3D] = {}
 var _powerup_textures: Dictionary[String, Texture2D] = {}
 var _local_peer_id: int = 0
@@ -51,6 +56,8 @@ func _exit_tree() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_ensure_local_peer_binding()
+	_enforce_local_camera_owner()
 	if not _spawned_players.has(_local_peer_id):
 		return
 	_refresh_local_freeze_state()
@@ -91,8 +98,38 @@ func _physics_process(delta: float) -> void:
 	Net.request_catch_attempt(target_peer_id, player.global_position)
 
 
+func _ensure_local_peer_binding() -> void:
+	var current_peer_id: int = Net.my_peer_id()
+	if current_peer_id <= 0:
+		return
+	if current_peer_id == _local_peer_id:
+		return
+	_rebind_local_peer(current_peer_id)
+
+
+func _rebind_local_peer(next_local_peer_id: int) -> void:
+	var previous_local_peer_id: int = _local_peer_id
+	_local_peer_id = next_local_peer_id
+
+	for peer_id in _spawned_players.keys():
+		var player: CharacterBody3D = _spawned_players[peer_id]
+		if player.has_method("set_local_controlled"):
+			player.call("set_local_controlled", peer_id == _local_peer_id)
+
+	if _spawned_players.has(previous_local_peer_id):
+		_attach_name_label(previous_local_peer_id, _spawned_players[previous_local_peer_id])
+	if _player_name_labels.has(_local_peer_id):
+		_player_name_labels[_local_peer_id].queue_free()
+		_player_name_labels.erase(_local_peer_id)
+
+	_enforce_local_camera_owner()
+	_refresh_role_visuals()
+
+
 func _spawn_match_players() -> void:
 	_spawned_players.clear()
+	_player_display_names.clear()
+	_player_name_labels.clear()
 
 	var players_snapshot: Array[Dictionary] = Game.make_players_snapshot()
 	if players_snapshot.is_empty():
@@ -110,6 +147,7 @@ func _spawn_match_players() -> void:
 		var peer_id: int = int(players_snapshot[i].get("peer_id", 0))
 		if peer_id <= 0:
 			continue
+		_player_display_names[peer_id] = str(players_snapshot[i].get("display_name", "Player"))
 
 		var player: CharacterBody3D = PLAYER_SCENE.instantiate()
 		player.name = "Player_%d" % peer_id
@@ -122,6 +160,7 @@ func _spawn_match_players() -> void:
 		if player.has_method("set_local_controlled"):
 			player.call("set_local_controlled", peer_id == _local_peer_id)
 		_spawned_players[peer_id] = player
+		_attach_name_label(peer_id, player)
 
 	_refresh_role_visuals()
 
@@ -208,6 +247,7 @@ func _refresh_role_visuals() -> void:
 				Game.is_catcher(peer_id),
 				peer_id == _local_peer_id
 			)
+		_refresh_name_label_color(peer_id, local_is_catcher)
 	_refresh_local_freeze_state()
 	_refresh_player_effect_visuals()
 
@@ -409,3 +449,39 @@ func _spawn_position_for_index(i: int) -> Vector3:
 	var x: float = (float(col) - 1.5) * SPAWN_SPACING
 	var z: float = (float(row) - 1.5) * SPAWN_SPACING
 	return Vector3(x, 1.0, z)
+
+
+func _enforce_local_camera_owner() -> void:
+	for peer_id in _spawned_players.keys():
+		var player: CharacterBody3D = _spawned_players[peer_id]
+		if player.has_method("set_camera_active"):
+			player.call("set_camera_active", peer_id == _local_peer_id)
+
+
+func _attach_name_label(peer_id: int, player: CharacterBody3D) -> void:
+	if peer_id == _local_peer_id:
+		return
+	var label: Label3D = Label3D.new()
+	label.name = "NameLabel"
+	label.position = Vector3(0.0, NAMETAG_HEIGHT_M, 0.0)
+	label.text = _player_display_names.get(peer_id, "Player")
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.no_depth_test = false
+	label.modulate = NAMETAG_DEFAULT_COLOR
+	label.outline_size = 8
+	label.outline_modulate = Color(0.0, 0.0, 0.0, 0.95)
+	label.font_size = 58
+	label.pixel_size = 0.0028
+	label.uppercase = false
+	player.add_child(label)
+	_player_name_labels[peer_id] = label
+
+
+func _refresh_name_label_color(peer_id: int, local_is_catcher: bool) -> void:
+	if not _player_name_labels.has(peer_id):
+		return
+	var label: Label3D = _player_name_labels[peer_id]
+	var color: Color = NAMETAG_DEFAULT_COLOR
+	if local_is_catcher and Game.is_catcher(peer_id):
+		color = NAMETAG_CATCHER_COLOR
+	label.modulate = color

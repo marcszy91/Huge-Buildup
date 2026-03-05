@@ -78,6 +78,11 @@ func set_local_controlled(is_local_controlled: bool) -> void:
 	_apply_control_mode()
 
 
+func set_camera_active(is_active: bool) -> void:
+	if _camera != null:
+		_camera.current = is_active
+
+
 func set_network_target_transform(pos: Vector3, yaw: float) -> void:
 	_remote_target_position = pos
 	_remote_target_yaw = yaw
@@ -146,6 +151,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _is_local_controlled:
 		return
 
+	if event is InputEventKey and event.pressed and event.keycode == KEY_F1:
+		_toggle_mouse_capture()
+		return
+
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		_camera_yaw.rotation.y -= event.relative.x * MOUSE_SENSITIVITY
 		_camera_pitch.rotation.x = clampf(
@@ -156,12 +165,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event.is_action_pressed("ui_cancel"):
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		_release_mouse_capture()
 		return
 
 	if event is InputEventMouseButton and event.pressed:
-		if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		if (
+			event.button_index == MOUSE_BUTTON_LEFT
+			and Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED
+		):
+			_capture_mouse_if_focused()
 
 
 func _physics_process(delta: float) -> void:
@@ -214,16 +226,46 @@ func _physics_process(delta: float) -> void:
 
 func _apply_control_mode() -> void:
 	if _camera != null:
-		_camera.current = _is_local_controlled
+		# Camera ownership is enforced by Match to avoid multi-instance race conditions.
+		_camera.current = false
 
 	set_physics_process(_is_local_controlled)
 	set_process(not _is_local_controlled)
 	set_process_unhandled_input(_is_local_controlled)
 
 	if _is_local_controlled:
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		_capture_mouse_if_focused()
 	else:
 		velocity = Vector3.ZERO
+		_release_mouse_capture()
+
+
+func _notification(what: int) -> void:
+	if not _is_local_controlled:
+		return
+	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		_release_mouse_capture()
+	elif what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
+		# Re-capture intentionally only after the user clicks or presses F1.
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+			_capture_mouse_if_focused()
+
+
+func _toggle_mouse_capture() -> void:
+	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		_release_mouse_capture()
+		return
+	_capture_mouse_if_focused()
+
+
+func _capture_mouse_if_focused() -> void:
+	if not DisplayServer.window_is_focused():
+		return
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+
+func _release_mouse_capture() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
 func _update_camera_collision(delta: float) -> void:
