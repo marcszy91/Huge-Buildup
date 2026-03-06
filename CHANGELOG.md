@@ -1,3 +1,9 @@
+## [1.0.0-alpha.16](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.15...v1.0.0-alpha.16) (2026-03-05)
+
+### Features
+
+* compute dynamic height for player name labels based on mesh instances ([a2fc711](https://github.com/marcszy91/Huge-Buildup/commit/a2fc7118329344230cb9b4cdad3d375c3a940802))
+
 ## [1.0.0-alpha.15](https://github.com/marcszy91/Huge-Buildup/compare/v1.0.0-alpha.14...v1.0.0-alpha.15) (2026-03-05)
 
 ### Features

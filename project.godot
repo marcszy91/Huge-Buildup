@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Huge Buildup"
-config/version="1.0.0-alpha.15"
+config/version="1.0.0-alpha.16"
 run/main_scene="res://scenes/Splash.tscn"
 config/features=PackedStringArray("4.6")
 config/icon="res://assets/branding/huge_buildup_icon.svg"
