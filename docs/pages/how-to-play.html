@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Huge Buildup - How to Play</title>
+	<meta name="description" content="Learn the game rules, controls and session flow for Huge Buildup.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+	<div class="page-shell">
+		<nav class="top-nav">
+			<div class="brand">Huge Buildup</div>
+			<div class="nav-links">
+				<a href="./index.html" data-i18n="nav_home">Home</a>
+				<a href="./how-to-play.html" data-i18n="nav_how_to">How to Play</a>
+			</div>
+			<label class="language-switch">
+				<span data-i18n="language_label">Language</span>
+				<select id="language-switch" aria-label="Language switch">
+					<option value="en">English</option>
+					<option value="de">Deutsch</option>
+				</select>
+			</label>
+		</nav>
+
+		<header class="hero">
+			<p class="eyebrow" data-i18n="guide_eyebrow">Guide</p>
+			<h1 data-i18n="guide_title">How to Play Huge Buildup</h1>
+			<p class="hero-copy" data-i18n="guide_copy">Short overview for hosting, joining and surviving each match.</p>
+		</header>
+
+		<main class="content-grid guide-grid">
+			<section class="downloads-panel">
+				<div class="panel-heading">
+					<p class="eyebrow" data-i18n="guide_gameplay_eyebrow">Gameplay</p>
+					<h2 data-i18n="guide_rules_title">Rules</h2>
+				</div>
+				<ul class="guide-list">
+					<li data-i18n="guide_rule_1">Catchers convert runners by touching them.</li>
+					<li data-i18n="guide_rule_2">A caught runner becomes catcher, the previous catcher becomes runner.</li>
+					<li data-i18n="guide_rule_3">New catchers are frozen for a short time and cannot chain-catch instantly.</li>
+					<li data-i18n="guide_rule_4">Power-ups spawn in the arena and activate instantly on pickup.</li>
+				</ul>
+			</section>
+
+			<section class="details-panel">
+				<div class="panel-heading">
+					<p class="eyebrow" data-i18n="guide_controls_eyebrow">Controls</p>
+					<h2 data-i18n="guide_controls_title">Default Keys</h2>
+				</div>
+				<ul class="guide-list mono">
+					<li data-i18n="guide_control_1">W A S D: Move</li>
+					<li data-i18n="guide_control_2">Mouse: Look around</li>
+					<li data-i18n="guide_control_3">Space: Jump</li>
+					<li data-i18n="guide_control_4">Esc: Free mouse / pause focus</li>
+				</ul>
+			</section>
+		</main>
+
+		<section class="gallery-panel">
+			<div class="panel-heading">
+				<p class="eyebrow" data-i18n="powerups_eyebrow">Power-ups</p>
+				<h2 data-i18n="powerups_title">Power-ups and Effects</h2>
+			</div>
+			<div class="powerup-grid">
+				<article class="powerup-card">
+					<img src="./assets/powerups/invisible.svg" alt="Invisibility power-up icon">
+					<div class="powerup-copy">
+						<h3 data-i18n="powerup_invisible_title">Invisibility</h3>
+						<p data-i18n="powerup_invisible_text">Makes your character invisible for 6 seconds to other players.</p>
+					</div>
+				</article>
+				<article class="powerup-card">
+					<img src="./assets/powerups/speed.svg" alt="Speed power-up icon">
+					<div class="powerup-copy">
+						<h3 data-i18n="powerup_speed_title">Speed Boost</h3>
+						<p data-i18n="powerup_speed_text">Increases movement speed for 5 seconds for quick chase or escape.</p>
+					</div>
+				</article>
+				<article class="powerup-card">
+					<img src="./assets/powerups/teleport.svg" alt="Teleport power-up icon">
+					<div class="powerup-copy">
+						<h3 data-i18n="powerup_teleport_title">Teleport</h3>
+						<p data-i18n="powerup_teleport_text">Teleports you instantly to a random valid position in the arena.</p>
+					</div>
+				</article>
+			</div>
+		</section>
+
+		<section class="gallery-panel">
+			<div class="panel-heading">
+				<p class="eyebrow" data-i18n="guide_flow_eyebrow">Flow</p>
+				<h2 data-i18n="guide_flow_title">Session Setup</h2>
+			</div>
+			<div class="screenshot-grid">
+				<figure class="screenshot-card">
+					<img src="./assets/screenshots/host_session.png" alt="Host Session screenshot" class="lightbox-target" data-lightbox-caption-key="shot_host">
+					<figcaption data-i18n="shot_host">Host Session Dialog</figcaption>
+				</figure>
+				<figure class="screenshot-card">
+					<img src="./assets/screenshots/join_session.png" alt="Join Session screenshot" class="lightbox-target" data-lightbox-caption-key="shot_join">
+					<figcaption data-i18n="shot_join">Join Session Dialog</figcaption>
+				</figure>
+				<figure class="screenshot-card">
+					<img src="./assets/screenshots/lobby.png" alt="Lobby screenshot" class="lightbox-target" data-lightbox-caption-key="shot_lobby_flow">
+					<figcaption data-i18n="shot_lobby_flow">Lobby Configuration</figcaption>
+				</figure>
+			</div>
+		</section>
+
+		<section class="gallery-panel">
+			<div class="panel-heading">
+				<p class="eyebrow" data-i18n="guide_config_eyebrow">Configuration</p>
+				<h2 data-i18n="guide_config_title">Configuration Screens</h2>
+			</div>
+			<div class="full-shots">
+				<figure class="full-shot-card">
+					<img src="./assets/screenshots/main_menu.png" alt="Main Menu full screenshot">
+					<figcaption>
+						<strong data-i18n="guide_config_main_title">Main Menu</strong>
+						<p data-i18n="guide_config_main_text">Set your display name, then choose Host or Join to open the dedicated session dialogs.</p>
+					</figcaption>
+				</figure>
+				<figure class="full-shot-card">
+					<img src="./assets/screenshots/host_session.png" alt="Host Session full screenshot">
+					<figcaption>
+						<strong data-i18n="guide_config_host_title">Host Session</strong>
+						<p data-i18n="guide_config_host_text">Configure max players and port, then start a host session for your LAN or internet test.</p>
+					</figcaption>
+				</figure>
+				<figure class="full-shot-card">
+					<img src="./assets/screenshots/join_session.png" alt="Join Session full screenshot">
+					<figcaption>
+						<strong data-i18n="guide_config_join_title">Join Session</strong>
+						<p data-i18n="guide_config_join_text">Enter host IP and port to connect. Use local LAN IP if all players are in one network.</p>
+					</figcaption>
+				</figure>
+				<figure class="full-shot-card">
+					<img src="./assets/screenshots/lobby.png" alt="Lobby full screenshot">
+					<figcaption>
+						<strong data-i18n="guide_config_lobby_title">Lobby</strong>
+						<p data-i18n="guide_config_lobby_text">Choose your character, set ready, and as host adjust catcher count and start the match.</p>
+					</figcaption>
+				</figure>
+			</div>
+		</section>
+	</div>
+
+	<script src="./app.js"></script>
+</body>
+</html>

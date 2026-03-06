@@ -37,6 +37,70 @@ a {
 	padding: 48px 0 64px;
 }
 
+.top-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 16px 18px;
+	margin-bottom: 16px;
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	background: rgba(9, 14, 24, 0.82);
+}
+
+.brand {
+	font-weight: 700;
+}
+
+.nav-links {
+	display: flex;
+	gap: 16px;
+}
+
+.nav-links a {
+	text-decoration: none;
+	color: var(--muted);
+}
+
+.nav-links a:hover {
+	color: var(--text);
+}
+
+.language-switch {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.88rem;
+}
+
+.language-switch select {
+	border-radius: 10px;
+	border: 1px solid var(--line);
+	background: rgba(13, 20, 34, 1);
+	color: var(--text);
+	padding: 6px 8px;
+}
+
+.intro-panel {
+	margin: 0 0 16px;
+	padding: 18px 20px;
+	border: 1px solid var(--line);
+	border-radius: 18px;
+	background: rgba(11, 17, 29, 0.86);
+}
+
+.intro-panel h2 {
+	margin: 0 0 8px;
+	font-size: clamp(1.3rem, 2.2vw, 2rem);
+}
+
+.intro-panel p {
+	margin: 0;
+	color: var(--muted);
+	max-width: 75ch;
+}
+
 .hero {
 	padding: 32px;
 	border: 1px solid var(--line);
@@ -209,14 +273,200 @@ a {
 	color: var(--accent);
 }
 
+.gallery-panel {
+	margin-top: 18px;
+	padding: 28px;
+	border-radius: 28px;
+	border: 1px solid var(--line);
+	background: var(--panel);
+	backdrop-filter: blur(10px);
+	box-shadow: var(--shadow);
+}
+
+.screenshot-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.screenshot-card {
+	margin: 0;
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	overflow: hidden;
+	background: rgba(9, 14, 24, 0.9);
+}
+
+.screenshot-card img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	cursor: zoom-in;
+}
+
+.screenshot-card figcaption {
+	padding: 10px 12px;
+	font-size: 0.92rem;
+	color: var(--muted);
+}
+
+.guide-grid {
+	grid-template-columns: 1fr 1fr;
+}
+
+.guide-list {
+	margin: 18px 0 0;
+	padding-left: 18px;
+	display: grid;
+	gap: 10px;
+}
+
+.guide-list li {
+	color: var(--text);
+}
+
+.guide-list.mono li {
+	font-family: "IBM Plex Mono", monospace;
+}
+
+.powerup-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.powerup-card {
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	padding: 14px;
+	background: rgba(9, 14, 24, 0.9);
+	display: grid;
+	grid-template-columns: 72px 1fr;
+	gap: 12px;
+	align-items: center;
+}
+
+.powerup-card img {
+	width: 72px;
+	height: 72px;
+	border-radius: 14px;
+	border: 1px solid var(--line);
+	background: rgba(6, 10, 18, 0.88);
+	padding: 6px;
+}
+
+.powerup-copy h3 {
+	margin: 0 0 6px;
+}
+
+.powerup-copy p {
+	margin: 0;
+	color: var(--muted);
+}
+
+.full-shots {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 14px;
+}
+
+.full-shot-card {
+	margin: 0;
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	overflow: visible;
+	background: rgba(9, 14, 24, 0.9);
+	padding: 14px;
+	display: grid;
+	gap: 12px;
+}
+
+.full-shot-card img {
+	display: block;
+	width: min(100%, 1000px);
+	max-height: 680px;
+	margin: 0 auto;
+	object-fit: contain;
+	border-radius: 12px;
+	border: 1px solid var(--line);
+	background: rgba(6, 10, 18, 0.88);
+}
+
+.full-shot-card figcaption {
+	padding: 0;
+	display: grid;
+	gap: 6px;
+	text-align: center;
+}
+
+.full-shot-card figcaption p {
+	margin: 0;
+	color: var(--muted);
+}
+
+.lightbox {
+	position: fixed;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	background: rgba(4, 8, 16, 0.9);
+	padding: 24px;
+	z-index: 9999;
+}
+
+.lightbox.is-open {
+	display: flex;
+}
+
+.lightbox-inner {
+	width: min(1200px, 96vw);
+	max-height: 92vh;
+	display: grid;
+	gap: 12px;
+}
+
+.lightbox-image {
+	width: 100%;
+	max-height: 82vh;
+	object-fit: contain;
+	border-radius: 12px;
+	border: 1px solid var(--line);
+	background: rgba(9, 14, 24, 0.95);
+}
+
+.lightbox-caption {
+	color: var(--text);
+	text-align: center;
+}
+
+.lightbox-close {
+	justify-self: end;
+	border: 1px solid var(--line);
+	background: rgba(13, 20, 34, 1);
+	color: var(--text);
+	border-radius: 10px;
+	padding: 8px 10px;
+	cursor: pointer;
+}
+
 @media (max-width: 920px) {
 	.release-meta,
 	.download-grid,
-	.content-grid {
+	.content-grid,
+	.screenshot-grid,
+	.guide-grid,
+	.powerup-grid {
 		grid-template-columns: 1fr;
 	}
 
 	.hero h1 {
 		max-width: none;
+	}
+
+	.top-nav {
+		flex-direction: column;
+		align-items: flex-start;
 	}
 }

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Huge Buildup Downloads</title>
+	<title>Huge Buildup</title>
 	<meta name="description" content="Download the latest Huge Buildup build for Windows, macOS, and Linux.">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,79 +12,121 @@
 </head>
 <body>
 	<div class="page-shell">
-		<header class="hero">
-			<p class="eyebrow">Huge Buildup</p>
-			<h1>Latest Build Downloads</h1>
-			<p class="hero-copy">
-				Always points to the newest GitHub release for this project.
+		<nav class="top-nav">
+			<div class="brand">Huge Buildup</div>
+			<div class="nav-links">
+				<a href="./index.html" data-i18n="nav_home">Home</a>
+				<a href="./how-to-play.html" data-i18n="nav_how_to">How to Play</a>
+			</div>
+			<label class="language-switch">
+				<span data-i18n="language_label">Language</span>
+				<select id="language-switch" aria-label="Language switch">
+					<option value="en">English</option>
+					<option value="de">Deutsch</option>
+				</select>
+			</label>
+		</nav>
+
+		<section class="intro-panel">
+			<p class="eyebrow" data-i18n="intro_eyebrow">Party Game</p>
+			<h2 data-i18n="intro_title">Fast rounds, loud laughs, zero downtime.</h2>
+			<p data-i18n="intro_copy">
+				Huge Buildup is a quick and funny tag game for LAN evenings, friend groups, and short in-between sessions.
 			</p>
+		</section>
+
+		<header class="hero">
+			<p class="eyebrow" data-i18n="hero_eyebrow">Huge Buildup</p>
+			<h1 data-i18n="hero_title">Latest Build Downloads</h1>
+			<p class="hero-copy" data-i18n="hero_copy">Always points to the newest GitHub release for this project.</p>
 			<div class="release-meta">
 				<div class="meta-card">
-					<span class="meta-label">Version</span>
+					<span class="meta-label" data-i18n="meta_version">Version</span>
 					<strong id="release-version">Loading...</strong>
 				</div>
 				<div class="meta-card">
-					<span class="meta-label">Channel</span>
+					<span class="meta-label" data-i18n="meta_channel">Channel</span>
 					<strong id="release-channel">Loading...</strong>
 				</div>
 				<div class="meta-card">
-					<span class="meta-label">Published</span>
+					<span class="meta-label" data-i18n="meta_published">Published</span>
 					<strong id="release-date">Loading...</strong>
 				</div>
 			</div>
 		</header>
 
-	<main class="content-grid">
+		<main class="content-grid">
 			<section class="downloads-panel">
 				<div class="panel-heading">
-					<p class="eyebrow">Downloads</p>
-					<h2>Pick Your Platform</h2>
+					<p class="eyebrow" data-i18n="downloads_eyebrow">Downloads</p>
+					<h2 data-i18n="downloads_title">Pick Your Platform</h2>
 				</div>
 				<div class="download-grid">
 					<a id="download-windows" class="download-card is-disabled" href="#" aria-disabled="true">
 						<span class="platform-tag">Windows</span>
-						<strong>Windows Build</strong>
-						<span class="download-hint">ZIP with executable</span>
+						<strong data-i18n="download_windows_title">Windows Build</strong>
+						<span class="download-hint" data-i18n="download_windows_hint">ZIP with executable</span>
 					</a>
 					<a id="download-macos" class="download-card is-disabled" href="#" aria-disabled="true">
 						<span class="platform-tag">macOS</span>
-						<strong>macOS Build</strong>
-						<span class="download-hint">ZIP archive</span>
+						<strong data-i18n="download_macos_title">macOS Build</strong>
+						<span class="download-hint" data-i18n="download_macos_hint">ZIP archive</span>
 					</a>
 					<a id="download-linux" class="download-card is-disabled" href="#" aria-disabled="true">
 						<span class="platform-tag">Linux</span>
-						<strong>Linux Build</strong>
-						<span class="download-hint">tar.gz archive</span>
+						<strong data-i18n="download_linux_title">Linux Build</strong>
+						<span class="download-hint" data-i18n="download_linux_hint">tar.gz archive</span>
 					</a>
 				</div>
-				<p id="status-message" class="status-message">Resolving latest release...</p>
+				<p id="status-message" class="status-message" data-i18n="status_loading">Resolving latest release...</p>
 			</section>
 
 			<aside class="details-panel">
 				<div class="panel-heading">
-					<p class="eyebrow">Release</p>
-					<h2>Build Details</h2>
+					<p class="eyebrow" data-i18n="release_eyebrow">Release</p>
+					<h2 data-i18n="release_title">Build Details</h2>
 				</div>
 				<dl class="details-list">
 					<div>
-						<dt>Repository</dt>
+						<dt data-i18n="details_repository">Repository</dt>
 						<dd id="repo-name">Detecting from page URL...</dd>
 					</div>
 					<div>
-						<dt>Release Page</dt>
-						<dd><a id="release-link" href="#" target="_blank" rel="noreferrer">Open on GitHub</a></dd>
+						<dt data-i18n="details_release_page">Release Page</dt>
+						<dd><a id="release-link" href="#" target="_blank" rel="noreferrer" data-i18n="details_open_github">Open on GitHub</a></dd>
 					</div>
 					<div>
-						<dt>Changelog</dt>
-						<dd><a id="changelog-link" href="#" target="_blank" rel="noreferrer">Open release notes</a></dd>
+						<dt data-i18n="details_changelog">Changelog</dt>
+						<dd><a id="changelog-link" href="#" target="_blank" rel="noreferrer" data-i18n="details_open_notes">Open release notes</a></dd>
 					</div>
 				</dl>
 				<div class="detail-highlight">
-					<span class="highlight-label">Live Feed</span>
-					<strong>Always pulls the latest published GitHub release.</strong>
+					<span class="highlight-label" data-i18n="live_feed">Live Feed</span>
+					<strong data-i18n="live_feed_text">Always pulls the latest published GitHub release.</strong>
 				</div>
 			</aside>
 		</main>
+
+		<section class="gallery-panel">
+			<div class="panel-heading">
+				<p class="eyebrow" data-i18n="screenshots_eyebrow">Media</p>
+				<h2 data-i18n="screenshots_title">Screenshots</h2>
+			</div>
+			<div class="screenshot-grid">
+				<figure class="screenshot-card">
+					<img src="./assets/screenshots/main_menu.png" alt="Main Menu screenshot" class="lightbox-target" data-lightbox-caption-key="shot_main_menu">
+					<figcaption data-i18n="shot_main_menu">Main Menu</figcaption>
+				</figure>
+				<figure class="screenshot-card">
+					<img src="./assets/screenshots/lobby.png" alt="Lobby screenshot" class="lightbox-target" data-lightbox-caption-key="shot_lobby">
+					<figcaption data-i18n="shot_lobby">Lobby</figcaption>
+				</figure>
+				<figure class="screenshot-card">
+					<img src="./assets/screenshots/game.png" alt="Gameplay screenshot" class="lightbox-target" data-lightbox-caption-key="shot_game">
+					<figcaption data-i18n="shot_game">In-Game</figcaption>
+				</figure>
+			</div>
+		</section>
 	</div>
 
 	<script src="./app.js"></script>
